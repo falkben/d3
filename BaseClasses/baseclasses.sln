@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BaseClasses", "baseclasses.vcproj", "{1D5B3568-5CEE-4CCC-A12E-65FCF406E9DB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug Unicode|Win32 = Debug Unicode|Win32
+		Debug|Win32 = Debug|Win32
+		Release Unicode|Win32 = Release Unicode|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1D5B3568-5CEE-4CCC-A12E-65FCF406E9DB}.Debug Unicode|Win32.ActiveCfg = Debug Unicode|Win32
+		{1D5B3568-5CEE-4CCC-A12E-65FCF406E9DB}.Debug Unicode|Win32.Build.0 = Debug Unicode|Win32
+		{1D5B3568-5CEE-4CCC-A12E-65FCF406E9DB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1D5B3568-5CEE-4CCC-A12E-65FCF406E9DB}.Debug|Win32.Build.0 = Debug|Win32
+		{1D5B3568-5CEE-4CCC-A12E-65FCF406E9DB}.Release Unicode|Win32.ActiveCfg = Release Unicode|Win32
+		{1D5B3568-5CEE-4CCC-A12E-65FCF406E9DB}.Release Unicode|Win32.Build.0 = Release Unicode|Win32
+		{1D5B3568-5CEE-4CCC-A12E-65FCF406E9DB}.Release|Win32.ActiveCfg = Release|Win32
+		{1D5B3568-5CEE-4CCC-A12E-65FCF406E9DB}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
