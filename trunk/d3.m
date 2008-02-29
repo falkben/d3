@@ -2,7 +2,7 @@
 % 2005.04.26 : Save as, fake video file, machine independent paths
 % 2005.04.21 : put changes for ben into changes for tameeka.
 % 2007.0.13  : Auto Tracking feature and reorganization of the Gui
-% apperence
+% appearence
 
 function varargout = d3(varargin)
 global D3_GLOBAL 
