@@ -81,17 +81,17 @@ end
 % --------------------------------------------------------------------
 % called when we wanna change paths
 function varargout = menu_paths_Callback(h, eventdata, handles, varargin)
-[pathname] = uigetfolder('Locate video folder (cancel to skip)');
+[pathname] = uigetdir(pwd, 'Locate video folder (cancel to skip)');
 if ~isempty(pathname)
     setpref('d3_path','video',[pathname]);
 end
 
-[pathname] = uigetfolder('Locate folder to export motus files to (cancel to skip)');
+[pathname] = uigetdir(pwd, 'Locate folder to export motus files to (cancel to skip)');
 if ~isempty(pathname)    
     setpref('d3_path','motus',[pathname]);
 end
 
-[pathname] = uigetfolder('Locate mat file export folder (cancel to skip)');
+[pathname] = uigetdir(pwd, 'Locate mat file export folder (cancel to skip)');
 if ~isempty(pathname)    
     setpref('d3_path','mat_file_path',[pathname]);
 end
@@ -111,17 +111,17 @@ disp('Kaushik Ghose kghose@gmail.com');
 disp('');
 
 if ~ispref('d3_path','video')
-    [pathname] = uigetfolder('Locate video folder');
+    [pathname] = uigetdir(pwd, 'Locate video folder');
     setpref('d3_path','video',[pathname]);
 end
 
 if ~ispref('d3_path','motus')
-    [pathname] = uigetfolder('Locate folder to export motus files to');
+    [pathname] = uigetdir(pwd, 'Locate folder to export motus files to');
     setpref('d3_path','motus',[pathname]);
 end
 
 if ~ispref('d3_path','mat_file_path')
-    [pathname] = uigetfolder('Locate mat file export folder');
+    [pathname] = uigetdir(pwd, 'Locate mat file export folder');
     setpref('d3_path','mat_file_path',[pathname]);
 end
 
@@ -1503,7 +1503,7 @@ function varargout = mat_export_Callback(h, eventdata, handles, varargin)
 global D3_GLOBAL
 
 if ~ispref('d3_path','mat_file_path')
-    [pathname] = uigetfolder('Locate mat file export folder');
+    [pathname] = uigetdir(pwd, 'Locate mat file export folder');
     setpref('d3_path','mat_file_path',[pathname]);
 end
 mat_file_path = getpref('d3_path','mat_file_path');
@@ -1550,7 +1550,7 @@ old_dir = pwd ;
 
 
 if ~ispref('d3_path','motus')
-    [pathname] = uigetfolder('Locate folder to export motus files to');
+    [pathname] = uigetdir(pwd, 'Locate folder to export motus files to');
     setpref('d3_path','motus',[pathname]);
 end
 pn = getpref('d3_path','motus');
