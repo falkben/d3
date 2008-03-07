@@ -457,6 +457,7 @@ set(D3_GLOBAL.handles.clip_start_c2_frame_edit,'string',num2str(D3_GLOBAL.trial_
 set(D3_GLOBAL.handles.trial_start_frame_edit,'string',num2str(D3_GLOBAL.trial_params.trial_start * D3_GLOBAL.trial_params.fvideo));
 set(D3_GLOBAL.handles.trial_end_frame_edit,'string',num2str(D3_GLOBAL.trial_params.trial_end * D3_GLOBAL.trial_params.fvideo));
 set(D3_GLOBAL.handles.trialcode_edit,'string',D3_GLOBAL.tcode);
+set(D3_GLOBAL.handles.frame_rate,'string',D3_GLOBAL.trial_params.fvideo);
 
 startframe =  round(D3_GLOBAL.trial_params.trial_start * D3_GLOBAL.trial_params.fvideo) ;
 endframe =  round(D3_GLOBAL.trial_params.trial_end * D3_GLOBAL.trial_params.fvideo) ;
