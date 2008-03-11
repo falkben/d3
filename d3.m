@@ -758,6 +758,9 @@ global D3_GLOBAL
 obj = mmreader(D3_GLOBAL.cam(D3_GLOBAL.camera).name);
 
 frame_cam_speedadj_array = frame_cam_speedadj;
+
+current_frame = frame_cam_speedadj_array(D3_GLOBAL.camera);
+
 try
     %D3_GLOBAL.image(1).c = aviread(D3_GLOBAL.cam(1).name,frame_cam_speedadj(1));
     %D3_GLOBAL.image(2).c = aviread(D3_GLOBAL.cam(2).name,frame_cam_speedadj(2));
@@ -766,13 +769,14 @@ try
 %     pixmap = reshape(pixmap/255,[avi_inf.Height,avi_inf.Width,3]);
 %     D3_GLOBAL.image(D3_GLOBAL.camera).c.cdata = pixmap;
 
- D3_GLOBAL.image(D3_GLOBAL.camera).c.cdata = read(obj, frame_cam_speedadj_array(D3_GLOBAL.camera));
+    images = read(obj, [current_frame current_frame+10]);
+    D3_GLOBAL.image(D3_GLOBAL.camera).c.cdata = images(:,:,:,1);
 catch
     disp('No video file');
 end
 % dxAviCloseMex(avi_hdl);
 
-%end_frames =1 if we are out of framess
+%end_frames =1 if we are out of frames
 function [end_frames] = advance_frame
 global D3_GLOBAL
 
