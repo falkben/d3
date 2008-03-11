@@ -753,19 +753,24 @@ speedadj = frame_cam .* speed_factor ;
 function load_video_frame
 global D3_GLOBAL
 
-[avi_hdl, avi_inf] = dxAviOpen(D3_GLOBAL.cam(D3_GLOBAL.camera).name);
+%[avi_hdl, avi_inf] = dxAviOpen(D3_GLOBAL.cam(D3_GLOBAL.camera).name);
+
+obj = mmreader(D3_GLOBAL.cam(D3_GLOBAL.camera).name);
+
 frame_cam_speedadj_array = frame_cam_speedadj;
 try
     %D3_GLOBAL.image(1).c = aviread(D3_GLOBAL.cam(1).name,frame_cam_speedadj(1));
     %D3_GLOBAL.image(2).c = aviread(D3_GLOBAL.cam(2).name,frame_cam_speedadj(2));
     
-    pixmap = dxAviReadMex(avi_hdl,  frame_cam_speedadj_array(D3_GLOBAL.camera));
-    pixmap = reshape(pixmap/255,[avi_inf.Height,avi_inf.Width,3]);
-    D3_GLOBAL.image(D3_GLOBAL.camera).c.cdata = pixmap;
+%     pixmap = dxAviReadMex(avi_hdl,  frame_cam_speedadj_array(D3_GLOBAL.camera));
+%     pixmap = reshape(pixmap/255,[avi_inf.Height,avi_inf.Width,3]);
+%     D3_GLOBAL.image(D3_GLOBAL.camera).c.cdata = pixmap;
+
+ D3_GLOBAL.image(D3_GLOBAL.camera).c.cdata = read(obj, frame_cam_speedadj_array(D3_GLOBAL.camera));
 catch
     disp('No video file');
 end
-dxAviCloseMex(avi_hdl);
+% dxAviCloseMex(avi_hdl);
 
 %end_frames =1 if we are out of framess
 function [end_frames] = advance_frame
@@ -858,7 +863,11 @@ else
 end
 
 old_dir = pwd;
-cd(pn);
+try
+    cd(pn);
+catch
+    disp('Your paths variable points to a directory that no longer exists. Please update the paths.');
+end
 
 if isfield(D3_GLOBAL,'vid_dir')
     if ~ischar(D3_GLOBAL.vid_dir)
@@ -893,7 +902,11 @@ else
 end
 
 old_dir = pwd;
-cd(pn);
+try
+    cd(pn);
+catch
+    disp('Your paths variable points to a directory that no longer exists. Please update the paths.');
+end
 
 if isfield(D3_GLOBAL,'vid_dir')
     if ~ischar(D3_GLOBAL.vid_dir)
@@ -939,16 +952,18 @@ set(handles.frame_slider,'min',1,'max',D3_GLOBAL.max_frames,'sliderstep',[2/D3_G
     'value',1);
 D3_GLOBAL.current_frame = 1 ;
 frame_cam_speedadj_array = frame_cam_speedadj;
-[avi_hdl, avi_inf] = dxAviOpen(D3_GLOBAL.cam(n).name);
+%[avi_hdl, avi_inf] = dxAviOpen(D3_GLOBAL.cam(n).name);
+obj = mmreader(D3_GLOBAL.cam(n).name);
 try
     %D3_GLOBAL.image(n).c = aviread(D3_GLOBAL.cam(n).name,D3_GLOBAL.current_frame);
-    pixmap = dxAviReadMex(avi_hdl, frame_cam_speedadj_array(n));
-    pixmap = reshape(pixmap/255,[avi_inf.Height,avi_inf.Width,3]);
-    D3_GLOBAL.image(n).c.cdata = pixmap;
+    %pixmap = dxAviReadMex(avi_hdl, frame_cam_speedadj_array(n));
+    %pixmap = reshape(pixmap/255,[avi_inf.Height,avi_inf.Width,3]);
+    
+    D3_GLOBAL.image(n).c.cdata = read(obj, frame_cam_speedadj_array(n));
 catch
     disp('load_trial_video :No video');
 end
-dxAviCloseMex(avi_hdl);
+%dxAviCloseMex(avi_hdl);
 set(handles.frame_edit,'string',num2str(D3_GLOBAL.current_frame));
 update(handles);
 
@@ -1735,15 +1750,19 @@ end;
 
 colormap gray
 
-[avi_hdl, avi_inf] = dxAviOpen(file);
-%a = aviread(file,cam_offset(n)+Ref_Frame_Ind + 1);
+% [avi_hdl, avi_inf] = dxAviOpen(file);
+% %a = aviread(file,cam_offset(n)+Ref_Frame_Ind + 1);
+% 
+% %getting the compressed video files
+% pixmap = dxAviReadMex(avi_hdl, cam_offset(n)+Ref_Frame_Ind + 1);
+% pixmap = reshape(pixmap/255,[avi_inf.Height,avi_inf.Width,3]);
+% a.cdata = pixmap;
+% 
+% dxAviCloseMex(avi_hdl);
 
-%getting the compressed video files
-pixmap = dxAviReadMex(avi_hdl, cam_offset(n)+Ref_Frame_Ind + 1);
-pixmap = reshape(pixmap/255,[avi_inf.Height,avi_inf.Width,3]);
-a.cdata = pixmap;
+obj = mmreader(file);
 
-dxAviCloseMex(avi_hdl);
+a.cdata = read(obj, cam_offset(n)+Ref_Frame_Ind + 1);
 
 if ndims(a.cdata) == 3
     Ref_Frame = rgb2gray(a.cdata);
