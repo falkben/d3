@@ -770,7 +770,7 @@ else
 end
 
 if isfield(D3_GLOBAL, 'buffer') && (D3_GLOBAL.buffer.cam == D3_GLOBAL.camera) && ~isempty(buffer_indx)
-        D3_GLOBAL.image(D3_GLOBAL.camera).c.cdata = shiftdim(D3_GLOBAL.buffer.video(buffer_indx,:,:,:),1);
+        D3_GLOBAL.image(D3_GLOBAL.camera).c.cdata = D3_GLOBAL.buffer.video(:,:,:,buffer_indx);
 else
 try
     %D3_GLOBAL.image(1).c = aviread(D3_GLOBAL.cam(1).name,frame_cam_speedadj(1));
@@ -781,14 +781,16 @@ try
 %     D3_GLOBAL.image(D3_GLOBAL.camera).c.cdata = pixmap;
 
     D3_GLOBAL.buffer.cam = D3_GLOBAL.camera;
-    images = read(obj, [current_frame current_frame+buffer_length-1]);
+    D3_GLOBAL.buffer.frames = 0;
+    D3_GLOBAL.buffer.video = 0;
+
+    D3_GLOBAL.buffer.video = read(obj, [current_frame current_frame+buffer_length-1]);
     for x=1:buffer_length
-        D3_GLOBAL.buffer.video(x,:,:,:) = images(:,:,:,x);
         D3_GLOBAL.buffer.frames(x) = current_frame+x-1;
     end
 
     %images = read(obj, [current_frame current_frame+10]);
-    D3_GLOBAL.image(D3_GLOBAL.camera).c.cdata = images(:,:,:,1);
+    D3_GLOBAL.image(D3_GLOBAL.camera).c.cdata = D3_GLOBAL.buffer.video(:,:,:,1);
 catch
     disp('No video file');
 end
@@ -1856,4 +1858,4 @@ for k = beg_frame:N
 end;
 set(handles.Auto_Track_Stop_pushbutton,'UserData',0,'Enable','off');
 t = toc;
-disp(['Ellapsed time is: ' num2str(t) 'seconds. Frames/Second: ' num2str((N-beg_frame)/t)]);
+disp(['Ellapsed time is: ' num2str(t) ' seconds. Frames/Second: ' num2str((N-beg_frame)/t)]);
