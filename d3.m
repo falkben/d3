@@ -102,10 +102,11 @@ end
 function initialise_all(handles)
 global D3_GLOBAL
 
-d3version = '1.0';
+d3version = '2.0';
 
 disp('D3');
 disp(['Version ' d3version]);
+disp('This version requires MATLAB 7.5 (2007b) or newer (mmreader)');
 disp('Murat Aytekin aytekin@umd.edu');
 disp('Kaushik Ghose kghose@gmail.com');
 disp('');
