@@ -755,12 +755,23 @@ global D3_GLOBAL
 
 %[avi_hdl, avi_inf] = dxAviOpen(D3_GLOBAL.cam(D3_GLOBAL.camera).name);
 
+buffer_length = 20;
+
 obj = mmreader(D3_GLOBAL.cam(D3_GLOBAL.camera).name);
 
 frame_cam_speedadj_array = frame_cam_speedadj;
 
 current_frame = frame_cam_speedadj_array(D3_GLOBAL.camera);
 
+if isfield(D3_GLOBAL, 'buffer')
+    buffer_indx = find(D3_GLOBAL.buffer.frames == current_frame);
+else
+    buffer_indx = false;
+end
+
+if isfield(D3_GLOBAL, 'buffer') && (D3_GLOBAL.buffer.cam == D3_GLOBAL.camera) && ~isempty(buffer_indx)
+        D3_GLOBAL.image(D3_GLOBAL.camera).c.cdata = shiftdim(D3_GLOBAL.buffer.video(buffer_indx,:,:,:),1);
+else
 try
     %D3_GLOBAL.image(1).c = aviread(D3_GLOBAL.cam(1).name,frame_cam_speedadj(1));
     %D3_GLOBAL.image(2).c = aviread(D3_GLOBAL.cam(2).name,frame_cam_speedadj(2));
@@ -769,10 +780,18 @@ try
 %     pixmap = reshape(pixmap/255,[avi_inf.Height,avi_inf.Width,3]);
 %     D3_GLOBAL.image(D3_GLOBAL.camera).c.cdata = pixmap;
 
-    images = read(obj, [current_frame current_frame+10]);
+    D3_GLOBAL.buffer.cam = D3_GLOBAL.camera;
+    images = read(obj, [current_frame current_frame+buffer_length-1]);
+    for x=1:buffer_length
+        D3_GLOBAL.buffer.video(x,:,:,:) = images(:,:,:,x);
+        D3_GLOBAL.buffer.frames(x) = current_frame+x-1;
+    end
+
+    %images = read(obj, [current_frame current_frame+10]);
     D3_GLOBAL.image(D3_GLOBAL.camera).c.cdata = images(:,:,:,1);
 catch
     disp('No video file');
+end
 end
 % dxAviCloseMex(avi_hdl);
 
@@ -956,7 +975,9 @@ set(handles.frame_slider,'min',1,'max',D3_GLOBAL.max_frames,'sliderstep',[2/D3_G
     'value',1);
 D3_GLOBAL.current_frame = 1 ;
 frame_cam_speedadj_array = frame_cam_speedadj;
+
 %[avi_hdl, avi_inf] = dxAviOpen(D3_GLOBAL.cam(n).name);
+
 obj = mmreader(D3_GLOBAL.cam(n).name);
 try
     %D3_GLOBAL.image(n).c = aviread(D3_GLOBAL.cam(n).name,D3_GLOBAL.current_frame);
@@ -1835,4 +1856,4 @@ for k = beg_frame:N
 end;
 set(handles.Auto_Track_Stop_pushbutton,'UserData',0,'Enable','off');
 t = toc;
-disp(['Ellapsed time is: ' num2str(t) ' Frames/Second: ' num2str((N-beg_frame)/t)]);
+disp(['Ellapsed time is: ' num2str(t) 'seconds. Frames/Second: ' num2str((N-beg_frame)/t)]);
