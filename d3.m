@@ -785,9 +785,7 @@ try
     D3_GLOBAL.buffer.video = 0;
 
     D3_GLOBAL.buffer.video = read(obj, [current_frame current_frame+buffer_length-1]);
-    for x=1:buffer_length
-        D3_GLOBAL.buffer.frames(x) = current_frame+x-1;
-    end
+    D3_GLOBAL.buffer.frames = current_frame:current_frame+buffer_length-1;
 
     %images = read(obj, [current_frame current_frame+10]);
     D3_GLOBAL.image(D3_GLOBAL.camera).c.cdata = D3_GLOBAL.buffer.video(:,:,:,1);
