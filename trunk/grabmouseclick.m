@@ -1,5 +1,10 @@
 function grabmouseclick(handles)
 global D3_GLOBAL
+global running
+
+if running == 1
+    return;
+end
 
 %is mouse button within axes
 scrn_pt = get(0,'PointerLocation');%gives us absolute mouse position
