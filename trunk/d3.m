@@ -758,8 +758,6 @@ global D3_GLOBAL
 
 buffer_length = 20;
 
-obj = mmreader(D3_GLOBAL.cam(D3_GLOBAL.camera).name);
-
 frame_cam_speedadj_array = frame_cam_speedadj;
 
 current_frame = frame_cam_speedadj_array(D3_GLOBAL.camera);
@@ -780,6 +778,9 @@ try
 %     pixmap = dxAviReadMex(avi_hdl,  frame_cam_speedadj_array(D3_GLOBAL.camera));
 %     pixmap = reshape(pixmap/255,[avi_inf.Height,avi_inf.Width,3]);
 %     D3_GLOBAL.image(D3_GLOBAL.camera).c.cdata = pixmap;
+
+
+    obj = mmreader(D3_GLOBAL.cam(D3_GLOBAL.camera).name);
 
     D3_GLOBAL.buffer.cam = D3_GLOBAL.camera;
     D3_GLOBAL.buffer.frames = 0;
