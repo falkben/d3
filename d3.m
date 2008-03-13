@@ -5,7 +5,8 @@
 % appearence
 
 function varargout = d3(varargin)
-global D3_GLOBAL 
+global D3_GLOBAL
+
 % D3 Application M-file for d3.fig
 %    FIG = D3 launch d3 GUI.
 %    D3('callback_name', ...) invoke the named callback.
@@ -101,6 +102,9 @@ end
 %called when d3 starts up, loads preferences
 function initialise_all(handles)
 global D3_GLOBAL
+global running
+
+running = 0;
 
 d3version = '2.0';
 
@@ -753,6 +757,8 @@ speedadj = frame_cam .* speed_factor ;
 
 function load_video_frame
 global D3_GLOBAL
+global running
+
 
 %[avi_hdl, avi_inf] = dxAviOpen(D3_GLOBAL.cam(D3_GLOBAL.camera).name);
 
@@ -779,14 +785,16 @@ try
 %     pixmap = reshape(pixmap/255,[avi_inf.Height,avi_inf.Width,3]);
 %     D3_GLOBAL.image(D3_GLOBAL.camera).c.cdata = pixmap;
 
-
+    
     obj = mmreader(D3_GLOBAL.cam(D3_GLOBAL.camera).name);
 
     D3_GLOBAL.buffer.cam = D3_GLOBAL.camera;
     D3_GLOBAL.buffer.frames = 0;
     D3_GLOBAL.buffer.video = 0;
 
+    running = 1;
     D3_GLOBAL.buffer.video = read(obj, [current_frame current_frame+buffer_length-1]);
+    running = 0;
     D3_GLOBAL.buffer.frames = current_frame:current_frame+buffer_length-1;
 
     %images = read(obj, [current_frame current_frame+10]);
