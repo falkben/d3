@@ -184,6 +184,11 @@ update(handles);
 % --------------------------------------------------------------------
 function varargout = frame_slider_Callback(h, eventdata, handles, varargin)
 global D3_GLOBAL
+global running
+
+if running == 1
+    return;
+end
 
 D3_GLOBAL.current_frame = fix(get(handles.frame_slider,'value'));
 set(handles.frame_edit,'string',num2str(D3_GLOBAL.current_frame));
@@ -762,7 +767,7 @@ global running
 
 %[avi_hdl, avi_inf] = dxAviOpen(D3_GLOBAL.cam(D3_GLOBAL.camera).name);
 
-buffer_length = 20;
+buffer_length = 30;
 
 frame_cam_speedadj_array = frame_cam_speedadj;
 
@@ -1061,7 +1066,8 @@ get_dlt ;
 function varargout = tight_button_Callback(h, eventdata, handles, varargin)
 global D3_GLOBAL
 
-D3_GLOBAL.remember_zoom = 0 ;
+%D3_GLOBAL.remember_zoom = 0 ;
+zoom off;
 update(handles);
 
 
