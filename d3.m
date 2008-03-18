@@ -335,7 +335,9 @@ trial_save_Callback(h, eventdata, handles, varargin);
 function varargout = trial_save_Callback(h, eventdata, handles, varargin)
 global D3_GLOBAL
 
-D3_GLOBAL=rmfield(D3_GLOBAL,'buffer');
+if isfield(D3_GLOBAL, 'buffer')
+    D3_GLOBAL=rmfield(D3_GLOBAL,'buffer');
+end
 
 tcode = get(handles.trialcode_edit,'string');
 tstart = D3_GLOBAL.trial_params.trial_start ;
