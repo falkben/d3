@@ -335,6 +335,8 @@ trial_save_Callback(h, eventdata, handles, varargin);
 function varargout = trial_save_Callback(h, eventdata, handles, varargin)
 global D3_GLOBAL
 
+D3_GLOBAL=rmfield(D3_GLOBAL,'buffer');
+
 tcode = get(handles.trialcode_edit,'string');
 tstart = D3_GLOBAL.trial_params.trial_start ;
 startframe = round(tstart * D3_GLOBAL.trial_params.fvideo) ; %not the start of the data but the start of the video data, according to the db
