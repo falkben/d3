@@ -349,13 +349,13 @@ cd(pn);
 %save trial as simply erases this internal filename and calls this function
 if isempty(D3_GLOBAL.internal.file_name)
     [filename, pathname] = uiputfile( [ tcode '_' num2str(startframe) '.d3'],'Save trial as');
-    cd(cdir);
     if filename == 0
         return
     end
     D3_GLOBAL.internal.file_name = [pathname filename]
 end
 
+cd(cdir);
 
 fn = D3_GLOBAL.internal.file_name
 
