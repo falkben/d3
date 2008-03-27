@@ -87,14 +87,9 @@ if ~isempty(pathname)
     setpref('d3_path','video',[pathname]);
 end
 
-[pathname] = uigetdir(pwd, 'Locate folder to export motus files to (cancel to skip)');
+[pathname] = uigetdir(pwd, 'Locate folder to save analyzed files (cancel to skip)');
 if ~isempty(pathname)    
-    setpref('d3_path','motus',[pathname]);
-end
-
-[pathname] = uigetdir(pwd, 'Locate mat file export folder (cancel to skip)');
-if ~isempty(pathname)    
-    setpref('d3_path','mat_file_path',[pathname]);
+    setpref('d3_path','analyzed_path',[pathname]);
 end
 
 
@@ -120,14 +115,9 @@ if ~ispref('d3_path','video')
     setpref('d3_path','video',[pathname]);
 end
 
-if ~ispref('d3_path','motus')
-    [pathname] = uigetdir(pwd, 'Locate folder to export motus files to');
-    setpref('d3_path','motus',[pathname]);
-end
-
-if ~ispref('d3_path','mat_file_path')
-    [pathname] = uigetdir(pwd, 'Locate mat file export folder');
-    setpref('d3_path','mat_file_path',[pathname]);
+if ~ispref('d3_path','analyzed_path')
+    [pathname] = uigetdir(pwd, 'Locate folder to save analyzed files (cancel to skip)');
+    setpref('d3_path','analyzed_path',[pathname]);
 end
 
 D3_GLOBAL = [];
@@ -347,8 +337,8 @@ if ~isfield(D3_GLOBAL.internal,'file_name')
     D3_GLOBAL.internal.file_name = '';
 end
 
-if ispref('d3_path','d3')
-    [pn] = getpref('d3_path','d3');
+if ispref('d3_path','analyzed_path')
+    [pn] = getpref('d3_path','analyzed_path');
 else
     pn = './';
 end
@@ -418,8 +408,8 @@ ButtonName=questdlg('Are you sure?', ...
         
    end % switch
 
-if ispref('d3_path','d3')
-    [pn] = getpref('d3_path','d3');
+if ispref('d3_path','analyzed_path')
+    [pn] = getpref('d3_path','analyzed_path');
 else
     pn = './';
 end
@@ -431,8 +421,6 @@ cd(cdir);
 if ~isstr(filename)
     return
 end
-
-setpref('d3_path','d3',pathname);
 
 load([pathname filename],'-MAT');
 D3_GLOBAL = whole_trial ;
@@ -1563,11 +1551,11 @@ import_segment(tcode, startframe);
 function varargout = mat_export_Callback(h, eventdata, handles, varargin)
 global D3_GLOBAL
 
-if ~ispref('d3_path','mat_file_path')
+if ~ispref('d3_path','analyzed_path')
     [pathname] = uigetdir(pwd, 'Locate mat file export folder');
-    setpref('d3_path','mat_file_path',[pathname]);
+    setpref('d3_path','analyzed_path',[pathname]);
 end
-mat_file_path = getpref('d3_path','mat_file_path');
+mat_file_path = getpref('d3_path','analyzed_path');
 
 tcode = get(handles.trialcode_edit,'string');
 tstart = D3_GLOBAL.trial_params.trial_start ;
@@ -1610,11 +1598,11 @@ global D3_GLOBAL
 old_dir = pwd ;
 
 
-if ~ispref('d3_path','motus')
+if ~ispref('d3_path','analyzed_path')
     [pathname] = uigetdir(pwd, 'Locate folder to export motus files to');
-    setpref('d3_path','motus',[pathname]);
+    setpref('d3_path','analyzed_path',[pathname]);
 end
-pn = getpref('d3_path','motus');
+pn = getpref('d3_path','analyzed_path');
 
 if isfield(D3_GLOBAL.internal,'file_name')
     proposed_fname = D3_GLOBAL.internal.file_name(1:end-3) ;
@@ -1635,7 +1623,6 @@ cd(old_dir);
 if filename == 0
     return
 end
-setpref('d3_path','motus',[pathname]);
 
 if length(filename) > 3
     if filename(length(filename)-3:length(filename)) ~= '.3ld'
