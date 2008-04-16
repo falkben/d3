@@ -82,7 +82,7 @@ end
 % --------------------------------------------------------------------
 % called when we wanna change paths
 function varargout = menu_paths_Callback(h, eventdata, handles, varargin)
-[pathname] = uigetdir(pwd, 'Locate video folder (cancel to skip)');
+[pathname] = uigetdir(pwd, 'Locate raw video folder (cancel to skip)');
 if ~isempty(pathname)
     setpref('d3_path','video',[pathname]);
 end
@@ -352,12 +352,12 @@ if isempty(D3_GLOBAL.internal.file_name)
     if filename == 0
         return
     end
-    D3_GLOBAL.internal.file_name = [pathname filename]
+    D3_GLOBAL.internal.file_name = [pathname filename];
 end
 
 cd(cdir);
 
-fn = D3_GLOBAL.internal.file_name
+fn = D3_GLOBAL.internal.file_name;
 
     if length(fn) > 3
         if strcmp(fn(end-2:end), '.d3') == 0
@@ -384,7 +384,7 @@ catch
     if filename == 0
         return
     end
-    D3_GLOBAL.internal.file_name = [pathname filename]    
+    D3_GLOBAL.internal.file_name = [pathname filename];
     save(D3_GLOBAL.internal.file_name,'whole_trial');
 end
 
@@ -1571,7 +1571,7 @@ for n = 1:length(D3_GLOBAL.spatial_model.point)
          D3_GLOBAL.reconstructed.point(n).pos(:,2)] ;
 end
 d3_analysed.endframe = startframe + size(d3_analysed.object(1).video,1) - 1;
-
+d3_analysed.fvideo = D3_GLOBAL.trial_params.fvideo;
 cdir = pwd;
 cd(mat_file_path);
 
@@ -1585,7 +1585,7 @@ end
 
 fn = [pathname filename];
 
-save(fn,'d3_analysed'); 
+save(fn,'d3_analysed','-V6');
 disp(['Saved ' tcode '_' num2str(startframe) '_d3.mat to: ' mat_file_path]);
 
 
