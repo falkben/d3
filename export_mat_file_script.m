@@ -1,3 +1,5 @@
+%loads a directory full of d3 files and saves the _d3.mat files in the new
+%format
 function export_mat_file_script
 
     pathname = uigetdir(pwd, 'Locate .d3 analyzed files for _d3.mat file export');
@@ -5,31 +7,16 @@ function export_mat_file_script
 
     for k=1:length(files)
         d3_file = files(k);
-        load_d3_file(pathname, d3_file.name);
+        [fn, D3_GLOBAL] = load_d3_file(pathname, d3_file.name);
+        save_d3_mat_file(fn, D3_GLOBAL);
     end
 
 end
 
-function load_d3_file(pathname, filename)
+%returns the filename and the D3_Global from the loaded d3 file
+function [fn, D3_GLOBAL] = load_d3_file(pathname, filename)
     load([pathname '\' filename],'-MAT');
     D3_GLOBAL = whole_trial;
     
-    tcode = D3_GLOBAL.tcode;
-    startframe = D3_GLOBAL.d3_analysed.startframe;
-    
-    d3_analysed = D3_GLOBAL.d3_analysed;
-    d3_analysed.trialcode = tcode;
-    d3_analysed.fvideo = D3_GLOBAL.trial_params.fvideo;
-    
-    for n = 1:length(D3_GLOBAL.spatial_model.point)
-        d3_analysed.object(n).name = D3_GLOBAL.spatial_model.point(n).name ;
-        d3_analysed.object(n).video = [D3_GLOBAL.reconstructed.point(n).pos(:,1) ...
-            -D3_GLOBAL.reconstructed.point(n).pos(:,3) ...
-            D3_GLOBAL.reconstructed.point(n).pos(:,2)] ;
-    end
-    
-    fn = [pathname '\' tcode '_' num2str(startframe) '_d3.mat'];
-    
-    save(fn,'d3_analysed','-V6');
-    disp(['Saved ' tcode '_' num2str(startframe) '_d3.mat to: ' pathname]);
+    fn = [pathname '\' D3_GLOBAL.tcode '_' num2str(D3_GLOBAL.d3_analysed.startframe) '_d3.mat'];
 end
