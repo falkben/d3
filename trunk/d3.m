@@ -766,7 +766,7 @@ frame_cam_speedadj_array = frame_cam_speedadj;
 current_frame = frame_cam_speedadj_array(D3_GLOBAL.camera);
 
 if isfield(D3_GLOBAL, 'buffer')
-    buffer_indx = find(D3_GLOBAL.buffer.frames == current_frame);
+    buffer_indx = find(D3_GLOBAL.buffer.frames == current_frame); %our image is inside the buffer
 else
     buffer_indx = false;
 end
@@ -785,6 +785,8 @@ try
     
     obj = mmreader(D3_GLOBAL.cam(D3_GLOBAL.camera).name);
 
+    if obj.NumberOfFrames ~= 1 %a calibration with only one frame breaks the reading of the mmreader object
+    
     D3_GLOBAL.buffer.cam = D3_GLOBAL.camera;
     D3_GLOBAL.buffer.frames = 0;
     D3_GLOBAL.buffer.video = 0;
@@ -796,6 +798,7 @@ try
 
     %images = read(obj, [current_frame current_frame+10]);
     D3_GLOBAL.image(D3_GLOBAL.camera).c.cdata = D3_GLOBAL.buffer.video(:,:,:,1);
+    end
 catch
     disp('No video file');
 end
@@ -1635,8 +1638,8 @@ end
 
 
 for j=1:length(D3_GLOBAL.reconstructed.point)
-    data_matrix(1:length(D3_GLOBAL.reconstructed.point(j).pos),(4*(j-1)+1):(4*j)) =...
-        [D3_GLOBAL.reconstructed.point(j).pos zeros(length(D3_GLOBAL.reconstructed.point(j).pos),1)];
+    data_matrix(1:size(D3_GLOBAL.reconstructed.point(j).pos,1),(4*(j-1)+1):(4*j)) =...
+        [D3_GLOBAL.reconstructed.point(j).pos zeros(size(D3_GLOBAL.reconstructed.point(j).pos,1),1)];
 end
 
 %2005.04.21 : kghose
