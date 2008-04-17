@@ -1560,25 +1560,10 @@ if ~ispref('d3_path','analyzed_path')
 end
 mat_file_path = getpref('d3_path','analyzed_path');
 
-tcode = get(handles.trialcode_edit,'string');
-tstart = D3_GLOBAL.trial_params.trial_start ;
-startframe = round(tstart * D3_GLOBAL.trial_params.fvideo) ; %not the start of the data but the start of the video data, according to the db
-d3_analysed.trialcode = tcode ;
-d3_analysed.startframe = startframe ;
-
-for n = 1:length(D3_GLOBAL.spatial_model.point)
-    d3_analysed.object(n).name = D3_GLOBAL.spatial_model.point(n).name ;
-    d3_analysed.object(n).video =...
-        [D3_GLOBAL.reconstructed.point(n).pos(:,1) ...
-         -D3_GLOBAL.reconstructed.point(n).pos(:,3) ...
-         D3_GLOBAL.reconstructed.point(n).pos(:,2)] ;
-end
-d3_analysed.endframe = startframe + size(d3_analysed.object(1).video,1) - 1;
-d3_analysed.fvideo = D3_GLOBAL.trial_params.fvideo;
 cdir = pwd;
 cd(mat_file_path);
 
-[filename, pathname] = uiputfile( [ tcode '_' num2str(startframe) '_d3.mat'],'Save trial as');
+[filename, pathname] = uiputfile( [ D3_GLOBAL.tcode '_' num2str(D3_GLOBAL.d3_analysed.startframe) '_d3.mat'],'Save trial as');
 cd(cdir);
 
 if filename == 0
@@ -1588,10 +1573,7 @@ end
 
 fn = [pathname filename];
 
-save(fn,'d3_analysed','-V6');
-disp(['Saved ' tcode '_' num2str(startframe) '_d3.mat to: ' mat_file_path]);
-
-
+save_d3_mat_file(fn, D3_GLOBAL);
 
 % this function follows the point order as given in the spatial model
 % --------------------------------------------------------------------
