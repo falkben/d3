@@ -1663,7 +1663,8 @@ function Auto_Track_Stop_pushbutton_Callback(hObject, eventdata, handles)
 % hObject    handle to Auto_Track_Stop_pushbutton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-set(hObject,'UserData') = get(~hObject,'UserData');
+set(hObject,'UserData',1);
+
 
 
 % --- Executes during object creation, after setting all properties.
@@ -1810,8 +1811,9 @@ hold off
 tic
 for k = beg_frame:N
     if get(handles.Auto_Track_Stop_pushbutton,'UserData')     %% Interupt check to stop tracking
-        set(handles.Auto_Track_Stop_pushbutton,'UserData',0,'Enable','off');
-        return;
+        break
+        %set(handles.Auto_Track_Stop_pushbutton,'UserData',0,'Enable','off');
+        %return;
     end;
     a = D3_GLOBAL.image(n).c;
     if ndims(a.cdata) == 3
