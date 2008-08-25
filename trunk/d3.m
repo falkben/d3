@@ -585,9 +585,8 @@ switch(mode)
 case 1 %calibration
     try
         axes(handles.axes1);
-        imagesc(D3_GLOBAL.calibration.image(D3_GLOBAL.camera).c.cdata);
-        colormap gray;
-        hold on;
+        M = image_manipulation(D3_GLOBAL.calibration.image(D3_GLOBAL.camera).c.cdata);
+        imagesc(M); colormap gray; hold on;
         for n=1:size(D3_GLOBAL.calibration.cam(D3_GLOBAL.camera).point,1)
             plot(D3_GLOBAL.calibration.cam(D3_GLOBAL.camera).point(n,1),D3_GLOBAL.calibration.cam(D3_GLOBAL.camera).point(n,2),'*');
             text(D3_GLOBAL.calibration.cam(D3_GLOBAL.camera).point(n,1),D3_GLOBAL.calibration.cam(D3_GLOBAL.camera).point(n,2),['point ' num2str(n)]);
