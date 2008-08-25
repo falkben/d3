@@ -130,8 +130,11 @@ end
 D3_GLOBAL.vid_dir = pathname ;
 cd(old_dir) ;
 
-M = aviread([pathname '/' filename],1);
-D3_GLOBAL.calibration.image(1).c = M ;
+obj = mmreader([pathname '/' filename]);
+D3_GLOBAL.calibration.image(1).c.cdata = read(obj,1);
+
+% M = aviread([pathname '/' filename],1);
+% D3_GLOBAL.calibration.image(1).c = M ;
 
 
 % --------------------------------------------------------------------
@@ -152,5 +155,8 @@ end
 D3_GLOBAL.vid_dir = pathname ;
 cd(old_dir) ;
 
-M = aviread([pathname '/' filename],1);
-D3_GLOBAL.calibration.image(2).c = M ;
+obj = mmreader([pathname '/' filename]);
+D3_GLOBAL.calibration.image(2).c.cdata = read(obj,1);
+
+% M = aviread([pathname '/' filename],1);
+% D3_GLOBAL.calibration.image(2).c = M ;
