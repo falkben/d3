@@ -1031,6 +1031,10 @@ set(D3_GLOBAL.handles.dlt_display_edit,'string',err_str);
 function get_3d
 global D3_GLOBAL
 
+all_str = get(D3_GLOBAL.handles.smoothing_popup,'string');
+filt_len = str2num(all_str{get(D3_GLOBAL.handles.smoothing_popup,'value')});
+smooth_camera_coords(filt_len);
+
 A = D3_GLOBAL.calibration.A;
 
 %%just for point one...
