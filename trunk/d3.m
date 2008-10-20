@@ -1275,7 +1275,9 @@ D3_GLOBAL.rawdata.point(D3_GLOBAL.current_point).cam(D3_GLOBAL.camera).coordinat
 % end
 
 D3_GLOBAL.current_frame = 1;
-    
+
+
+load_video_frame;
 update(handles);
 
 
