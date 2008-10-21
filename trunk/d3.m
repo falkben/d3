@@ -1843,7 +1843,8 @@ for k = beg_frame:N
     hold on; 
     if isempty(indx)
         disp('Sorry can''t continue :( --> Tracking Failed !!! ');
-        toc
+        t = toc;
+        disp(['Ellapsed time is: ' num2str(t) ' seconds. Frames/Second: ' num2str((k-beg_frame)/t)]);
         return;
     end;
     x = mean(X(indx));
