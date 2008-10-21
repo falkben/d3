@@ -904,7 +904,11 @@ if isfield(D3_GLOBAL,'vid_dir')
     if ~ischar(D3_GLOBAL.vid_dir)
         D3_GLOBAL.vid_dir = './';
     end
-    cd(D3_GLOBAL.vid_dir);
+    try
+        cd(D3_GLOBAL.vid_dir);
+    catch
+        disp('Could not find your video file.');
+    end
 else
     D3_GLOBAL.vid_dir = './';
 end
@@ -943,7 +947,11 @@ if isfield(D3_GLOBAL,'vid_dir')
     if ~ischar(D3_GLOBAL.vid_dir)
         D3_GLOBAL.vid_dir = './';
     end
-    cd(D3_GLOBAL.vid_dir);
+    try
+        cd(D3_GLOBAL.vid_dir);
+    catch
+        disp('Could not find your video file.');
+    end
 else
     D3_GLOBAL.vid_dir = './';
 end
