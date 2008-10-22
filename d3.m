@@ -1810,7 +1810,7 @@ else
 end;
 curr_frame = double(image_manipulation(curr_frame));
 qwe = (curr_frame-Ref_Frame);%20;
-thr = 4*std((qwe(:))); %15; %20
+thr = 1.5*std((qwe(:))); %15; %20
 qwe = qwe > thr;
 imagesc(curr_frame); 
 
@@ -1845,6 +1845,7 @@ for k = beg_frame:N
         disp('Sorry can''t continue :( --> Tracking Failed !!! ');
         t = toc;
         disp(['Ellapsed time is: ' num2str(t) ' seconds. Frames/Second: ' num2str((k-beg_frame)/t)]);
+        update(handles);
         return;
     end;
     x = mean(X(indx));
@@ -1859,7 +1860,7 @@ for k = beg_frame:N
     drawnow; 
     hold off;
     
-    get_next_frame;    
+    get_next_frame;
 end;
 set(handles.Auto_Track_Stop_pushbutton,'UserData',0,'Enable','off');
 t = toc;
