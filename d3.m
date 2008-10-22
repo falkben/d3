@@ -784,6 +784,10 @@ try
     obj = mmreader(D3_GLOBAL.cam(D3_GLOBAL.camera).name);
 
     if obj.NumberOfFrames ~= 1 %a calibration with only one frame breaks the reading of the mmreader object
+
+    if (D3_GLOBAL.current_frame + buffer_length) >= D3_GLOBAL.max_frames
+        buffer_length = D3_GLOBAL.max_frames-D3_GLOBAL.current_frame+1;
+    end
     
     D3_GLOBAL.buffer.cam = D3_GLOBAL.camera;
     D3_GLOBAL.buffer.frames = 0;
