@@ -344,7 +344,11 @@ else
 end
 
 cdir = pwd;
-cd(pn);
+try
+    cd(pn);
+catch
+    disp('Your analyzed video path variable points to a non existant directory.');
+end
 
 %save trial as simply erases this internal filename and calls this function
 if isempty(D3_GLOBAL.internal.file_name)
@@ -414,7 +418,11 @@ else
 end
 
 cdir = pwd;
-cd(pn);
+try
+    cd(pn);
+catch
+    disp('Cannot find your analyzed files directory.  Please check your paths.');
+end;
 [filename, pathname] = uigetfile( '*.d3','Load trial');
 cd(cdir);
 if ~isstr(filename)
@@ -1577,7 +1585,12 @@ end
 mat_file_path = getpref('d3_path','analyzed_path');
 
 cdir = pwd;
-cd(mat_file_path);
+
+try
+    cd(mat_file_path);
+catch
+    disp('Path does not exist.  Update your analyzed video file dirctory.');
+end
 
 [filename, pathname] = uiputfile( [ D3_GLOBAL.tcode '_' num2str(D3_GLOBAL.d3_analysed.startframe) '_d3.mat'],'Save trial as');
 cd(cdir);
