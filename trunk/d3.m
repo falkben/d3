@@ -11,7 +11,7 @@ global D3_GLOBAL
 %    FIG = D3 launch d3 GUI.
 %    D3('callback_name', ...) invoke the named callback.
 
-% Last Modified by GUIDE v2.5 08-Jan-2008 10:51:19
+% Last Modified by GUIDE v2.5 27-Oct-2008 16:52:07
 
 if nargin == 0  % LAUNCH GUI
 
@@ -19,7 +19,6 @@ if nargin == 0  % LAUNCH GUI
 
 	% Generate a structure of handles to pass to callbacks, and store it. 
 	handles = guihandles(fig);
-
     
 %    D3_GLOBAL.handles = handles ;
     guidata(fig, handles);
@@ -1882,3 +1881,14 @@ end;
 set(handles.Auto_Track_Stop_pushbutton,'UserData',0,'Enable','off');
 t = toc;
 disp(['Ellapsed time is: ' num2str(t) ' seconds. Frames/Second: ' num2str((N-beg_frame)/t)]);
+
+
+% --- Executes on button press in load_stationary_points_button.
+function load_stationary_points_button_Callback(hObject, eventdata, handles)
+% hObject    handle to load_stationary_points_button (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global D3_GLOBAL;
+
+load_stationary_points;
+update(D3_GLOBAL.handles);

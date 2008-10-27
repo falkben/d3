@@ -1,6 +1,17 @@
 function load_stationary_points
 global D3_GLOBAL
 
+if ~isfield(D3_GLOBAL, 'spatial_model')
+    disp('Spatial model not loaded for current trial.')
+    return;
+elseif ~isfield(D3_GLOBAL, 'calibration')
+    disp('Calibration not loaded for current trial.')
+    return;
+elseif isempty(D3_GLOBAL.max_frames)
+    disp('Load your raw video first.')
+    return;
+end
+
 if ispref('d3_path','analyzed_path')
     [pn] = getpref('d3_path','analyzed_path');
 else
@@ -16,7 +27,7 @@ end;
 [filename, pathname] = uigetfile( '*.d3','Load trial');
 cd(cdir);
 if ~isstr(filename)
-    return
+    return;
 end
 
 load([pathname filename],'-MAT');
