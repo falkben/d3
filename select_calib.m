@@ -97,7 +97,7 @@ function varargout = object_popup_Callback(h, eventdata, handles, varargin)
 % --------------------------------------------------------------------
 function varargout = cancel_button_Callback(h, eventdata, handles, varargin)
 varargout{1} = 0;
-closereq
+closereq;
 
 
 % looks for the mat file containing the calibration frames under the
@@ -110,53 +110,39 @@ load calibration_frames
 names = {calibration(:).object_name};
 set(handles.object_popup,'string',names);
 
-
-
 % --------------------------------------------------------------------
 function varargout = cam1_button_Callback(h, eventdata, handles, varargin)
 global D3_GLOBAL
 
-old_dir = pwd ;
-
-if isfield(D3_GLOBAL,'vid_dir')
-    cd(D3_GLOBAL.vid_dir);
-end
-
-[filename, pathname] = uigetfile( {'*.avi';'*.*'},'Load Camera #1 calibration');
-if isempty(filename)
-    return;
-end
-
-D3_GLOBAL.vid_dir = pathname ;
-cd(old_dir) ;
-
-obj = mmreader([pathname '/' filename]);
-D3_GLOBAL.calibration.image(1).c.cdata = read(obj,1);
-
-% M = aviread([pathname '/' filename],1);
-% D3_GLOBAL.calibration.image(1).c = M ;
+load_calibration_video(1);
 
 
 % --------------------------------------------------------------------
 function varargout = cam2_button_Callback(h, eventdata, handles, varargin)
 global D3_GLOBAL
 
+load_calibration_video(2);
+
+
+function load_calibration_video(cam)
+global D3_GLOBAL
+
 old_dir = pwd ;
 
-if isfield(D3_GLOBAL,'vid_dir')
+if isfield(D3_GLOBAL,'vid_dir') && ~isnumeric(D3_GLOBAL.vid_dir) && (exist(D3_GLOBAL.vid_dir,'dir') ~= 0)
     cd(D3_GLOBAL.vid_dir);
 end
 
-[filename, pathname] = uigetfile( {'*.avi';'*.*'},'Load Camera #2 calibration');
-if isempty(filename)
+[filename, pathname] = uigetfile( {'*.avi';'*.*'},['Load Camera #', num2str(cam), ' calibration']);
+if (filename == 0)
     return;
 end
 
-D3_GLOBAL.vid_dir = pathname ;
-cd(old_dir) ;
+D3_GLOBAL.vid_dir = pathname;
+cd(old_dir);
 
 obj = mmreader([pathname '/' filename]);
-D3_GLOBAL.calibration.image(2).c.cdata = read(obj,1);
+D3_GLOBAL.calibration.image(cam).c.cdata = read(obj,1);
 
 % M = aviread([pathname '/' filename],1);
-% D3_GLOBAL.calibration.image(2).c = M ;
+% D3_GLOBAL.calibration.image(1).c = M ;

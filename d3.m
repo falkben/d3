@@ -265,7 +265,7 @@ waitfor(select_calib) ;
 %now put program in calibration mode
 set(handles.mode_popup,'value',1);
 mode_changed(handles);
-update(handles)
+update(handles);
 
 % load existing calibration file
 % --------------------------------------------------------------------
