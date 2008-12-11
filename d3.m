@@ -153,7 +153,7 @@ D3_GLOBAL.internal.cam_speed(1) = 30 ;
 D3_GLOBAL.internal.cam_speed(2) = 30 ;
 D3_GLOBAL.internal.file_name = '' ;
 
-D3_GLOBAL.d3_analysed.startframe = 0 ;
+D3_GLOBAL.d3_analysed.startframe = -2126 ;
 D3_GLOBAL.d3_analysed.endframe = 0 ;
 
 % --------------------------------------------------------------------
