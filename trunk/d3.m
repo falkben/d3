@@ -571,10 +571,8 @@ case 2 %digitization
 end
     
 % --------------------------------------------------------------------
-function [need_fake_mouse_click] = update(handles)
+function update(handles)
 global D3_GLOBAL
-
-need_fake_mouse_click = 0 ;
 
 %get current zoom and hold it
 Xlim = get(handles.axes1,'xlim');
@@ -677,7 +675,7 @@ set(handles.frame_slider,'value',D3_GLOBAL.current_frame);
     
 % is called by grabmouseclick (wwhich is called directly as a callback from the UI when clicked)
 % this actually advances either the frame or the point or both depending on the mode and point and frame
-function [need_fake_mouse_click] = get_next_frame
+function get_next_frame
 global D3_GLOBAL
 
 set(D3_GLOBAL.handles.x_click_text,'string',['x = ' num2str(D3_GLOBAL.internal.x)]);
@@ -715,7 +713,7 @@ case 1
     end
 end
     
-need_fake_mouse_click = update(D3_GLOBAL.handles);
+update(D3_GLOBAL.handles);
 
 
 
@@ -1301,14 +1299,6 @@ D3_GLOBAL.current_frame = 1;
 
 load_video_frame;
 update(handles);
-
-
-% --------------------------------------------------------------------
-function varargout = kill_box_Callback(h, eventdata, handles, varargin)
-
-
-
-
 
 
 % --------------------------------------------------------------------

@@ -28,12 +28,12 @@ if(...
     
     %advance frame/point
     counter = 0 ;
-    while d3('get_next_frame')
+    d3('get_next_frame')
         %kill switch check
-        drawnow ;
-        if get(D3_GLOBAL.handles.kill_box,'value')
-            break;
-        end
-    end
+        %drawnow ;
+%         if get(D3_GLOBAL.handles.kill_box,'value')
+%             break;
+%         end
+    
     
 end
