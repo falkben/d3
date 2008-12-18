@@ -643,22 +643,25 @@ case 2 %digitization
     end% cycle through all the points
     
     hold off;    
-    %try
+    
+%   12.18.2008 - BF - the following code was giving problems and I can't see where the
+%   variable "need_fake_mouse_click" is actually used so I've commented it out
+    
     %this section handles the fake automatic mouseclick for stationary points
-    if ~isempty(D3_GLOBAL.spatial_model.point(D3_GLOBAL.current_point).stationary)
-        if D3_GLOBAL.spatial_model.point(D3_GLOBAL.current_point).stationary
-            if ~isempty(D3_GLOBAL.rawdata.point(D3_GLOBAL.current_point).cam(D3_GLOBAL.camera).coordinate)...
-                    && (D3_GLOBAL.current_frame > 1 )
-                D3_GLOBAL.internal.x =...
-                    D3_GLOBAL.rawdata.point(D3_GLOBAL.current_point).cam(D3_GLOBAL.camera).coordinate(D3_GLOBAL.current_frame -1,1);
-                D3_GLOBAL.internal.y =...    
-                    D3_GLOBAL.rawdata.point(D3_GLOBAL.current_point).cam(D3_GLOBAL.camera).coordinate(D3_GLOBAL.current_frame -1,2);
-                %get_next_frame; 
-                need_fake_mouse_click = 1 ;
-            end
-        end
-    end
-    %end
+%     if ~isempty(D3_GLOBAL.spatial_model.point(D3_GLOBAL.current_point).stationary)
+%         if D3_GLOBAL.spatial_model.point(D3_GLOBAL.current_point).stationary
+%             if ~isempty(D3_GLOBAL.rawdata.point(D3_GLOBAL.current_point).cam(D3_GLOBAL.camera).coordinate)...
+%                     && (D3_GLOBAL.current_frame > 1 )
+%                 D3_GLOBAL.internal.x =...
+%                     D3_GLOBAL.rawdata.point(D3_GLOBAL.current_point).cam(D3_GLOBAL.camera).coordinate(D3_GLOBAL.current_frame -1,1);
+%                 D3_GLOBAL.internal.y =...    
+%                     D3_GLOBAL.rawdata.point(D3_GLOBAL.current_point).cam(D3_GLOBAL.camera).coordinate(D3_GLOBAL.current_frame -1,2);
+%                 %get_next_frame; 
+%                 need_fake_mouse_click = 1 ;
+%             end
+%         end
+%     end
+
 end
 
 if D3_GLOBAL.remember_zoom
