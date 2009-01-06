@@ -1623,7 +1623,11 @@ end
 first_frame_stamp = abs(fix(D3_GLOBAL.trial_params.trial_start * D3_GLOBAL.trial_params.fvideo)) ;
 proposed_fname = [proposed_fname '_' num2str(first_frame_stamp)]
 
-cd(pn);
+try 
+    cd(pn);
+catch
+    disp('Path does not exist.  Update your analyzed video file dirctory.');
+end;
 [filename, pathname] = uiputfile( [proposed_fname '.3ld'],'Save position data in motus (text) format');
 cd(old_dir);
 if filename == 0
