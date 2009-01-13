@@ -82,12 +82,12 @@ end
 % called when we wanna change paths
 function varargout = menu_paths_Callback(h, eventdata, handles, varargin)
 [pathname] = uigetdir(pwd, 'Locate raw video folder (cancel to skip)');
-if ~isempty(pathname)
+if ~(pathname==0)
     setpref('d3_path','video',[pathname]);
 end
 
 [pathname] = uigetdir(pwd, 'Locate folder to save analyzed files (cancel to skip)');
-if ~isempty(pathname)    
+if ~(pathname==0)
     setpref('d3_path','analyzed_path',[pathname]);
 end
 
@@ -134,7 +134,8 @@ D3_GLOBAL.current_point = [];
 D3_GLOBAL.camera = [];
 D3_GLOBAL.remember_zoom = 0 ;
 
-D3_GLOBAL.trial_params.fvideo = 250 ; %need a way to change this
+D3_GLOBAL.trial_params.fvideo=250;
+set(handles.frame_rate,'String',num2str(D3_GLOBAL.trial_params.fvideo)) ; %need a way to change this
 D3_GLOBAL.trial_params.clip(1).start = -2126 / D3_GLOBAL.trial_params.fvideo ; %video clip 1 starts at....
 D3_GLOBAL.trial_params.clip(2).start = -2126 / D3_GLOBAL.trial_params.fvideo ;
 D3_GLOBAL.trial_params.trial_start = -2126 / D3_GLOBAL.trial_params.fvideo ;
