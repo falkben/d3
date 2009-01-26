@@ -136,10 +136,11 @@ D3_GLOBAL.remember_zoom = 0 ;
 
 D3_GLOBAL.trial_params.fvideo=250;
 set(handles.frame_rate,'String',num2str(D3_GLOBAL.trial_params.fvideo)) ; %need a way to change this
-D3_GLOBAL.trial_params.clip(1).start = -2126 / D3_GLOBAL.trial_params.fvideo ; %video clip 1 starts at....
-D3_GLOBAL.trial_params.clip(2).start = -2126 / D3_GLOBAL.trial_params.fvideo ;
-D3_GLOBAL.trial_params.trial_start = -2126 / D3_GLOBAL.trial_params.fvideo ;
-D3_GLOBAL.trial_params.trial_end = 0 ;
+
+%everything is based on the frame rate and the start and end frames,
+%once we set framerate, we can set the times
+set_time_frame_parameters(handles);
+
 D3_GLOBAL.trial_params.interaction_time = .5 ;
 
 D3_GLOBAL.rawdata.point.cam(1).coordinate = [];
@@ -1521,7 +1522,11 @@ global D3_GLOBAL
 %        str2double(get(hObject,'String')) returns contents of frame_rate as a double
 
 D3_GLOBAL.trial_params.fvideo = str2double(get(hObject,'String'));
+set_time_frame_parameters(handles);
 
+function set_time_frame_parameters(handles)
+global D3_GLOBAL
+    
 %fixing the time textboxes and variables...
 D3_GLOBAL.trial_params.trial_start = str2double(get(handles.trial_start_frame_edit,'string')) / D3_GLOBAL.trial_params.fvideo  ;
 set(handles.trial_start_edit,'string',num2str(D3_GLOBAL.trial_params.trial_start));
