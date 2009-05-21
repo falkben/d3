@@ -277,7 +277,7 @@ global D3_GLOBAL
 D3_GLOBAL.remember_zoom = 0;
 
 [filename, pathname] = uigetfile( {'*.clb';'*.*'},'Load');
-if isempty(filename)
+if (filename)==0
     return
 end
 load([pathname '/' filename],'-MAT');
@@ -436,26 +436,29 @@ D3_GLOBAL.handles = handles ;
 D3_GLOBAL.remember_zoom = 0;
 
 if ~isfield(D3_GLOBAL,'tcode')
-%forces people to enter trial code in my format
-prompt={'Year','Month','Day','Session','Trial#'};
-def={'2004','01','01','1','01'};
-dlgTitle='New trial';
-lineNo=1;
-answer=inputdlg(prompt,dlgTitle,lineNo,def);
-if ~isempty(answer)
-    yr = answer{1};
-    mo = answer{2};
-    dy = answer{3};
-    se = answer{4};
-    tr = answer{5};
-    tc = [yr(1:4) '.' mo(1:2) '.' dy(1:2) '.' se(1) '.' tr(1:2)];
-    D3_GLOBAL.tcode = tc;
+    %forces people to enter trial code in my format
+    prompt={'Year','Month','Day','Session','Trial#'};
+    def={'2004','01','01','1','01'};
+    dlgTitle='New trial';
+    lineNo=1;
+    answer=inputdlg(prompt,dlgTitle,lineNo,def);
+    if ~isempty(answer)
+        yr = answer{1};
+        mo = answer{2};
+        dy = answer{3};
+        se = answer{4};
+        tr = answer{5};
+        tc = [yr(1:4) '.' mo(1:2) '.' dy(1:2) '.' se(1) '.' tr(1:2)];
+        D3_GLOBAL.tcode = tc;
+        set(gcf,'Name',['3-d: ' D3_GLOBAL.tcode],'NumberTitle','off');
+    else
+        warndlg('You have refused to enter trial date. Continue at your own risk.','No trial code');
+        D3_GLOBAL.tcode = 'none';
+        set(gcf,'Name','3-d:','NumberTitle','off');
+    end    
+
 else
-    warndlg('You have refused to enter trial date. Continue at your own risk.','No trial code');
-    D3_GLOBAL.tcode = 'none';    
-end    
-    
-    
+    set(gcf,'Name',['3-d: ' D3_GLOBAL.tcode],'NumberTitle','off');
 end
 
 set(D3_GLOBAL.handles.clip_start_c1_edit,'string',num2str(D3_GLOBAL.trial_params.clip(1).start));
@@ -516,8 +519,13 @@ if ~isempty(answer)
     tr = answer{5};
     tc = [yr(1:4) '.' mo(1:2) '.' dy(1:2) '.' se(1) '.' tr(1:2)];
     set(handles.trialcode_edit,'string',tc);
+    D3_GLOBAL.tcode = tc;
+    set(gcf,'Name',['3-d: ' D3_GLOBAL.tcode],'NumberTitle','off');
 else
+    set(gcf,'Name','3-d','NumberTitle','off');
     warndlg('You have refused to enter trial date. Continue at your own risk.','No trial code');
+    D3_GLOBAL.tcode = [];
+    set(handles.trialcode_edit,'string','');
 end
 
 
@@ -675,7 +683,7 @@ set(handles.frame_slider,'value',D3_GLOBAL.current_frame);
 
     
     
-% is called by grabmouseclick (wwhich is called directly as a callback from the UI when clicked)
+% is called by grabmouseclick (which is called directly as a callback from the UI when clicked)
 % this actually advances either the frame or the point or both depending on the mode and point and frame
 function get_next_frame
 global D3_GLOBAL
@@ -899,6 +907,16 @@ update(handles);
 
 % --------------------------------------------------------------------
 function varargout = trial_video1_Callback(h, eventdata, handles, varargin)
+
+load_video_file(handles,1);
+
+% --------------------------------------------------------------------
+function varargout = trial_video2_Callback(h, eventdata, handles, varargin)
+
+load_video_file(handles,2);
+
+
+function load_video_file(handles,cam)
 global D3_GLOBAL
 
 if ispref('d3_path','video')
@@ -927,8 +945,8 @@ else
     D3_GLOBAL.vid_dir = './';
 end
 
-[filename, pathname] = uigetfile( {'*.avi';'*.*'},'Load Camera #1 video');
-if isempty(filename)
+[filename, pathname] = uigetfile( {'*.avi';'*.*'},['Load Camera #' num2str(cam) ' video']);
+if (filename)==0
     %cancelled
     cd(old_dir) ;
     return;
@@ -937,49 +955,15 @@ end
 D3_GLOBAL.vid_dir = pathname ;
 cd(old_dir) ;
 
-D3_GLOBAL.cam(1).name = [pathname filename];
-load_trial_video(handles,1);
+D3_GLOBAL.cam(cam).name = [pathname filename];
 
-% --------------------------------------------------------------------
-function varargout = trial_video2_Callback(h, eventdata, handles, varargin)
-global D3_GLOBAL
-
-if ispref('d3_path','video')
-    [pn] = getpref('d3_path','video');
-else
-    pn = './';
+if ~isempty(D3_GLOBAL.cam(1).name) && ~isempty(D3_GLOBAL.cam(2).name)
+   D3_GLOBAL.tcode = [filename(1:end-29) filename(end-16:end-15)];
+   set(gcf,'Name',['3-d: ' D3_GLOBAL.tcode],'NumberTitle','off');
+   set(handles.trialcode_edit,'string',D3_GLOBAL.tcode);
 end
 
-old_dir = pwd;
-try
-    cd(pn);
-catch
-    disp('Your paths variable points to a directory that no longer exists. Please update the paths.');
-end
-
-if isfield(D3_GLOBAL,'vid_dir')
-    if ~ischar(D3_GLOBAL.vid_dir)
-        D3_GLOBAL.vid_dir = './';
-    end
-    try
-        cd(D3_GLOBAL.vid_dir);
-    catch
-        disp('Could not find your video file.');
-    end
-else
-    D3_GLOBAL.vid_dir = './';
-end
-
-[filename, pathname] = uigetfile( {'*.avi';'*.*'},'Load Camera #2 video');
-if isempty(filename)
-    return;
-end
-
-D3_GLOBAL.vid_dir = pathname ;
-cd(old_dir) ;
-
-D3_GLOBAL.cam(2).name = [pathname filename];
-load_trial_video(handles,2);
+load_trial_video(handles,cam);
 
 
 % --------------------------------------------------------------------
@@ -1362,7 +1346,7 @@ function varargout = trialcode_edit_Callback(h, eventdata, handles, varargin)
 global D3_GLOBAL
 
 D3_GLOBAL.tcode = get(handles.trialcode_edit,'string');
-
+set(gcf,'Name',['3-d: ' D3_GLOBAL.tcode],'NumberTitle','off');
 
 
 % --------------------------------------------------------------------
