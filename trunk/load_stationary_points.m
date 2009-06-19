@@ -1,5 +1,7 @@
-function load_stationary_points
+function return_code = load_stationary_points
 global D3_GLOBAL
+
+return_code = 0;
 
 if ~isfield(D3_GLOBAL, 'spatial_model')
     disp('Spatial model not loaded for current trial.')
@@ -10,6 +12,11 @@ elseif ~isfield(D3_GLOBAL, 'calibration')
 elseif isempty(D3_GLOBAL.max_frames)
     disp('Load your raw video first.')
     return;
+elseif D3_GLOBAL.max_frames == 2127
+    button = questdlg('Warning: Trial length has not been edited.','Trial length needs editing','Proceed','Cancel','Cancel');
+    if strcmp(button,'Cancel')
+        return;
+    end
 end
 
 if ispref('d3_path','analyzed_path')
@@ -46,3 +53,5 @@ for n = 1:length(whole_trial.spatial_model.point)
         end
     end
 end
+
+return_code = 1;
