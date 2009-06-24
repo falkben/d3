@@ -958,9 +958,15 @@ cd(old_dir) ;
 D3_GLOBAL.cam(cam).name = [pathname filename];
 
 if ~isempty(D3_GLOBAL.cam(1).name) && ~isempty(D3_GLOBAL.cam(2).name)
-   D3_GLOBAL.tcode = [filename(1:end-29) filename(end-16:end-15)];
-   set(gcf,'Name',['3-d: ' D3_GLOBAL.tcode],'NumberTitle','off');
-   set(handles.trialcode_edit,'string',D3_GLOBAL.tcode);
+    indx = strfind(filename,'compressed');
+    %if the filename has been compressed we assume it follows our naming
+    %convention and construct the trial code
+    if ~isempty(indx)
+        trial_num = filename(indx-3:indx-2);
+        D3_GLOBAL.tcode = [filename(1:11) trial_num];
+        set(gcf,'Name',['3-d: ' D3_GLOBAL.tcode],'NumberTitle','off');
+        set(handles.trialcode_edit,'string',D3_GLOBAL.tcode);
+    end
 end
 
 load_trial_video(handles,cam);
