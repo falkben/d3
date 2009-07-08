@@ -10,8 +10,8 @@ d3_analysed.fvideo = D3_GLOBAL.trial_params.fvideo;
 for n = 1:length(D3_GLOBAL.spatial_model.point)
     d3_analysed.object(n).name = D3_GLOBAL.spatial_model.point(n).name ;
     d3_analysed.object(n).video = [D3_GLOBAL.reconstructed.point(n).pos(:,1) ...
-        -D3_GLOBAL.reconstructed.point(n).pos(:,3) ...
-        D3_GLOBAL.reconstructed.point(n).pos(:,2)] ;
+    -D3_GLOBAL.reconstructed.point(n).pos(:,3) ...
+    D3_GLOBAL.reconstructed.point(n).pos(:,2)] ;
 end
 
 save(fn,'d3_analysed','-V6');

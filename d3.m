@@ -1177,10 +1177,10 @@ Mout = histeq(Mout,6);
 function varargout = reconstruct_button_Callback(h, eventdata, handles, varargin)
 global D3_GLOBAL
 
-get_3d ;
+get_3d;
 
 axes(handles.axes_3d);
-plot_3dreconstructed ;
+plot_3dreconstructed;
 
 % --------------------------------------------------------------------
 function plot_3dreconstructed
