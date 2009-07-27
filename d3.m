@@ -1883,5 +1883,7 @@ function load_stationary_points_button_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global D3_GLOBAL;
 
-load_stationary_points;
-update(D3_GLOBAL.handles);
+return_code = load_stationary_points;
+if return_code == 1
+    update(D3_GLOBAL.handles);
+end
