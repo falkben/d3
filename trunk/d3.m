@@ -256,6 +256,10 @@ function varargout = trial_spatial_model_Callback(h, eventdata, handles, varargi
 
 % --------------------------------------------------------------------
 function varargout = load_spatial_model_Callback(h, eventdata, handles, varargin)
+load_spatial_model(handles);
+
+
+function load_spatial_model(handles)
 global D3_GLOBAL
 
 waitfor(select_spatial_model) ;
@@ -267,6 +271,7 @@ if (get(handles.mode_popup,'value') == 2) %digitizing, need to update the spatia
     mode_changed(handles);
 end
 update(handles);
+
 
 
 % open GUI to handle new calibration file
@@ -287,11 +292,14 @@ update(handles);
 % load existing calibration file
 % --------------------------------------------------------------------
 function varargout = load_calibration_Callback(h, eventdata, handles, varargin)
+load_calibration(handles);
+
+function load_calibration(handles)
 global D3_GLOBAL
 
 D3_GLOBAL.remember_zoom = 0;
 
-[filename, pathname] = uigetfile( {'*.clb';'*.*'},'Load');
+[filename, pathname] = uigetfile( {'*.clb';'*.*'},'Load Calibration');
 if (filename)==0
     return
 end
@@ -299,6 +307,7 @@ load([pathname '/' filename],'-MAT');
 D3_GLOBAL.calibration = variable ;
 mode_changed(handles);
 update(handles);
+
 
 %now put program in calibration mode
 % set(handles.mode_popup,'value',1);
@@ -505,44 +514,57 @@ function varargout = trial_new_Callback(h, eventdata, handles, varargin)
 global D3_GLOBAL
 
 %ask if we need to save old trial
-ButtonName=questdlg('Are you sure?', ...
+ButtonName=questdlg('Save old trial first?', ...
                        'New Trial', ...
-                       'No!No!','Yes!','Save old trial first','No!No!');
+                       'No!','Save trial','No!');
  
-   switch ButtonName,
-     case 'No!No!', 
-        return;
-     case 'Save old trial first',
+switch ButtonName,
+    case 'Save old trial first',
         trial_save_Callback(h, eventdata, handles, varargin);
-        
-   end % switch
+    case 'No!'
+        % continue
+    otherwise
+        return;
+end % switch
 
 %wipe data for old trial and start afresh
 initialise_all(handles);
 
 %forces people to enter trial code in my format
-prompt={'Year','Month','Day','Session','Trial#'};
-def={'2004','01','01','1','01'};
-dlgTitle='New trial';
-lineNo=1;
-answer=inputdlg(prompt,dlgTitle,lineNo,def);
-if ~isempty(answer)
-    yr = answer{1};
-    mo = answer{2};
-    dy = answer{3};
-    se = answer{4};
-    tr = answer{5};
-    tc = [yr(1:4) '.' mo(1:2) '.' dy(1:2) '.' se(1) '.' tr(1:2)];
-    set(handles.trialcode_edit,'string',tc);
-    D3_GLOBAL.tcode = tc;
-    set(gcf,'Name',['3-d: ' D3_GLOBAL.tcode],'NumberTitle','off');
-else
-    set(gcf,'Name','3-d','NumberTitle','off');
-    warndlg('You have refused to enter trial date. Continue at your own risk.','No trial code');
-    D3_GLOBAL.tcode = [];
-    set(handles.trialcode_edit,'string','');
-end
+% removed BF (2009.10.16) - trial code is already set when you load the
+% camera files
+% prompt={'Year','Month','Day','Session','Trial#'};
+% def={'2004','01','01','1','01'};
+% dlgTitle='New trial';
+% lineNo=1;
+% answer=inputdlg(prompt,dlgTitle,lineNo,def);
+% if ~isempty(answer)
+%     yr = answer{1};
+%     mo = answer{2};
+%     dy = answer{3};
+%     se = answer{4};
+%     tr = answer{5};
+%     tc = [yr(1:4) '.' mo(1:2) '.' dy(1:2) '.' se(1) '.' tr(1:2)];
+%     set(handles.trialcode_edit,'string',tc);
+%     D3_GLOBAL.tcode = tc;
+%     set(gcf,'Name',['3-d: ' D3_GLOBAL.tcode],'NumberTitle','off');
+% else
+%     set(gcf,'Name','3-d','NumberTitle','off');
+%     warndlg('You have refused to enter trial date. Continue at your own risk.','No trial code');
+%     D3_GLOBAL.tcode = [];
+%     set(handles.trialcode_edit,'string','');
+% end
 
+%load calibration
+set(handles.mode_popup,'value',1);
+load_calibration(handles);
+
+%load spatial model
+load_spatial_model(handles);
+
+%load camera videos
+load_video_file(handles,1);
+load_video_file(handles,2);
 
 
 % --------------------------------------------------------------------

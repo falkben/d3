@@ -113,3 +113,4 @@ load spatial_models
 %set the popup list
 names = {spatial_model(:).name};
 set(handles.model_select_popup,'string',names);
+set(handles.figure1,'Name','Select Spatial Model');
