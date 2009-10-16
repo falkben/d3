@@ -11,7 +11,7 @@ global D3_GLOBAL
 %    FIG = D3 launch d3 GUI.
 %    D3('callback_name', ...) invoke the named callback.
 
-% Last Modified by GUIDE v2.5 27-Oct-2008 16:52:07
+% Last Modified by GUIDE v2.5 14-Oct-2009 17:10:42
 
 if nargin == 0  % LAUNCH GUI
 
@@ -165,12 +165,27 @@ D3_GLOBAL.camera = get(handles.camera_select,'value');
 
 %because the other camera could have a different image and needs updating
  try
-     load_video_frame;
+    load_video_frame;
+    update_cam_fname_edit(handles);
  catch
  end
 
 update(handles);
 
+
+function update_cam_fname_edit(handles)
+global D3_GLOBAL
+
+if get(handles.mode_popup,'value') == 2
+    set(handles.cam_fname_edit,'Visible','On');
+    indices = strfind(D3_GLOBAL.cam(D3_GLOBAL.camera).name,'\');
+    indx = indices(end);
+    fname = D3_GLOBAL.cam(D3_GLOBAL.camera).name(indx+1:end);
+    set(handles.cam_fname_edit,'String',fname);
+    set(handles.cam_fname_edit,'ToolTipString',D3_GLOBAL.cam(D3_GLOBAL.camera).name);
+else
+    set(handles.cam_fname_edit,'Visible','Off');
+end
 
 % --------------------------------------------------------------------
 function varargout = frame_slider_Callback(h, eventdata, handles, varargin)
@@ -565,6 +580,9 @@ case 1 %calibration
     advance_mode = get(handles.advance_mode_radio,'value');
     set(handles.advance_mode_radio,'value',0,'visible','off');
     
+    
+    update_cam_fname_edit(handles);
+    
 case 2 %digitization
     %get n points for digitization and put them in the string for the popup
     for k=1:length(D3_GLOBAL.spatial_model.point)
@@ -578,6 +596,9 @@ case 2 %digitization
     set(handles.frame_edit,'visible','on');
     set(handles.play_button,'visible','on');    
     set(handles.advance_mode_radio,'value',advance_mode,'visible','on');
+    
+
+    update_cam_fname_edit(handles);
 end
     
 % --------------------------------------------------------------------
@@ -1887,3 +1908,22 @@ return_code = load_stationary_points;
 if return_code == 1
     update(D3_GLOBAL.handles);
 end
+
+
+% --- Executes during object creation, after setting all properties.
+function cam_fname_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to cam_fname_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+
+
+function cam_fname_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to cam_fname_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of cam_fname_edit as text
+%        str2double(get(hObject,'String')) returns contents of cam_fname_edit as a double
+
+
