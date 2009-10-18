@@ -144,6 +144,8 @@ set_time_frame_parameters(handles);
 D3_GLOBAL.trial_params.interaction_time = .5 ;
 D3_GLOBAL.trial_params.trial_start = -8.504 ;
 D3_GLOBAL.trial_params.trial_end = 0 ;
+D3_GLOBAL.trial_params.clip(1).start=-8.504;
+D3_GLOBAL.trial_params.clip(2).start=-8.504;
 
 D3_GLOBAL.rawdata.point.cam(1).coordinate = [];
 D3_GLOBAL.rawdata.point.cam(2).coordinate = [];
