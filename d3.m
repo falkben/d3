@@ -142,6 +142,8 @@ set(handles.frame_rate,'String',num2str(D3_GLOBAL.trial_params.fvideo)) ; %need 
 set_time_frame_parameters(handles);
 
 D3_GLOBAL.trial_params.interaction_time = .5 ;
+D3_GLOBAL.trial_params.trial_start = -8.504 ;
+D3_GLOBAL.trial_params.trial_end = 0 ;
 
 D3_GLOBAL.rawdata.point.cam(1).coordinate = [];
 D3_GLOBAL.rawdata.point.cam(2).coordinate = [];
@@ -157,6 +159,21 @@ D3_GLOBAL.internal.file_name = '' ;
 
 D3_GLOBAL.d3_analysed.startframe = -2126 ;
 D3_GLOBAL.d3_analysed.endframe = 0 ;
+
+%reset the GUI
+cla(handles.axes_3d,'reset');
+set(D3_GLOBAL.handles.trial_start_frame_edit,'String','-2126');
+set(D3_GLOBAL.handles.trial_end_frame_edit,'String','0');
+set(D3_GLOBAL.handles.clip_start_c1_frame_edit,'String','-2126');
+set(D3_GLOBAL.handles.clip_start_c2_frame_edit,'String','-2126');
+set(D3_GLOBAL.handles.clip_start_c1_edit,'String','-8.504');
+set(D3_GLOBAL.handles.clip_start_c2_edit,'String','-8.504');
+set(D3_GLOBAL.handles.trial_start_edit,'String','-8.504');
+set(D3_GLOBAL.handles.trial_end_edit,'String','0');
+set(D3_GLOBAL.handles.trialcode_edit,'String','');
+set(D3_GLOBAL.handles.frame_rate,'String','250');
+set(D3_GLOBAL.handles.dlt_display_edit,'String','DLT not computed');
+set(D3_GLOBAL.handles.quantization_popup,'Value',1);
 
 % --------------------------------------------------------------------
 function varargout = camera_select_Callback(h, eventdata, handles, varargin)
