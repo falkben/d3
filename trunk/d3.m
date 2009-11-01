@@ -11,7 +11,7 @@ global D3_GLOBAL
 %    FIG = D3 launch d3 GUI.
 %    D3('callback_name', ...) invoke the named callback.
 
-% Last Modified by GUIDE v2.5 14-Oct-2009 17:10:42
+% Last Modified by GUIDE v2.5 01-Nov-2009 15:30:01
 
 if nargin == 0  % LAUNCH GUI
 
@@ -443,12 +443,12 @@ function varargout = trial_load_Callback(h, eventdata, handles, varargin)
 global D3_GLOBAL
 
 %ask if we need to save old trial
-ButtonName=questdlg('Are you sure?', ...
-                       'New Trial', ...
-                       'No!No!','What old trial?','Save old trial first','No!No!');
+ButtonName=questdlg('Open another trial?  Note that unsaved changes to the current trial will be lost.', ...
+                       'Open Trial', ...
+                       'Yes','No','Save current trial first','No');
  
    switch ButtonName,
-     case 'No!No!', 
+     case 'No', 
         return;
      case 'Save old trial first',
         trial_save_Callback(h, eventdata, handles, varargin);
@@ -533,15 +533,14 @@ function varargout = trial_new_Callback(h, eventdata, handles, varargin)
 global D3_GLOBAL
 
 %ask if we need to save old trial
-ButtonName=questdlg('Save old trial first?', ...
-                       'New Trial', ...
-                       'No!','Save trial','No!');
+ButtonName=questdlg( 'Start new trial?  Note that any unsaved work will be lost.', ...
+                     'New Trial Confirmation', 'Yes', 'No', 'No' );
  
 switch ButtonName,
-    case 'Save old trial first',
-        trial_save_Callback(h, eventdata, handles, varargin);
-    case 'No!'
+    case 'Yes'
         % continue
+    case 'No'
+        return % "New trial" sequence cancelled.
     otherwise
         return;
 end % switch
@@ -1257,6 +1256,7 @@ for n =1:length(D3_GLOBAL.reconstructed.point)
     plot3(x(1),y(1),z(1), [ 'o' D3_GLOBAL.spatial_model.point(n).color]);
 end    
 hold off; xlabel('x'); ylabel('y')
+axis equal
 
 
 % --------------------------------------------------------------------
@@ -1287,9 +1287,17 @@ for n=1:length(D3_GLOBAL.rawdata.point)%cycle thru points
 %         cam_coord_smooth(D3_GLOBAL.rawdata.point(n).cam(2).coordinate,filt_len);        
 
 len = size(D3_GLOBAL.rawdata.point(n).cam(1).coordinate,1);
-y1 = D3_GLOBAL.rawdata.point(n).cam(1).coordinate(1:filt_len:end,1) ;
-y2 = D3_GLOBAL.rawdata.point(n).cam(1).coordinate(1:filt_len:end,2) ;
-x_sub = 1:filt_len:len;
+if filt_len == 0
+    filt_indices = [];
+else
+    filt_indices = 1:filt_len:len;
+    if filt_indices(end) ~= len
+        filt_indices(end+1) = len;
+    end
+end
+y1 = D3_GLOBAL.rawdata.point(n).cam(1).coordinate(filt_indices,1);
+y2 = D3_GLOBAL.rawdata.point(n).cam(1).coordinate(filt_indices,2);
+x_sub = filt_indices;
 x = 1:len;
 
 if filt_len < 1
@@ -1299,9 +1307,9 @@ else
 end
 
 len = size(D3_GLOBAL.rawdata.point(n).cam(2).coordinate,1);
-y1 = D3_GLOBAL.rawdata.point(n).cam(2).coordinate(1:filt_len:end,1) ;
-y2 = D3_GLOBAL.rawdata.point(n).cam(2).coordinate(1:filt_len:end,2) ;
-x_sub = 1:filt_len:len;
+y1 = D3_GLOBAL.rawdata.point(n).cam(2).coordinate(filt_indices,1);
+y2 = D3_GLOBAL.rawdata.point(n).cam(2).coordinate(filt_indices,2);
+x_sub = filt_indices;
 x = 1:len;
 
 if filt_len < 1
@@ -1966,5 +1974,12 @@ function cam_fname_edit_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of cam_fname_edit as text
 %        str2double(get(hObject,'String')) returns contents of cam_fname_edit as a double
+
+
+% --------------------------------------------------------------------
+function menu_file_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_file (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
 
 
