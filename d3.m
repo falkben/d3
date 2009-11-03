@@ -404,16 +404,17 @@ if isempty(D3_GLOBAL.internal.file_name)
     D3_GLOBAL.internal.file_name = [pathname filename];
 end
 
+cd(cdir);
 fn = D3_GLOBAL.internal.file_name;
 
-    if length(fn) > 3
-        if strcmp(fn(end-2:end), '.d3') == 0
-            fn = [fn '.d3'];
-        end
-    else
-        %no extension ?
+if length(fn) > 3
+    if strcmp(fn(end-2:end), '.d3') == 0
         fn = [fn '.d3'];
     end
+else
+    % No extension?
+    fn = [fn '.d3'];
+end
     
 D3_GLOBAL.internal.file_name = fn ;    
 
