@@ -11,7 +11,7 @@ global D3_GLOBAL
 %    FIG = D3 launch d3 GUI.
 %    D3('callback_name', ...) invoke the named callback.
 
-% Last Modified by GUIDE v2.5 01-Nov-2009 15:30:01
+% Last Modified by GUIDE v2.5 05-Nov-2009 14:20:22
 
 if nargin == 0  % LAUNCH GUI
 
@@ -1980,6 +1980,31 @@ function cam_fname_edit_Callback(hObject, eventdata, handles)
 % --------------------------------------------------------------------
 function menu_file_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_file (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+function key_press_handler(hObject)
+handles = guidata(gcbo);
+global D3_GLOBAL
+
+
+key=get(hObject,'CurrentKey');
+
+switch key
+    case 'f'
+        if strcmp(D3_GLOBAL.last_key_press,'control')
+            %might need some additional error checking
+            fill_button_Callback('','', handles,'');
+        end
+end
+
+D3_GLOBAL.last_key_press = key;
+
+
+% --------------------------------------------------------------------
+function trial_new_Callback(hObject, eventdata, handles)
+% hObject    handle to trial_new (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
