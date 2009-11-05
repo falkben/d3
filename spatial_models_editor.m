@@ -16,9 +16,13 @@ end
      end
  end
 
-model = 29;
-for x=2:length(spatial_model(1,model).point)
+model = 35;
+spatial_model(1,model).name='25 Point Calibration Frame';
+for x=1:25
    spatial_model(1,model).point(1,x).stationary = 1;
+   spatial_model(1,model).point(1,x).name = ['point ' num2str(x)];
+   spatial_model(1,model).point(1,x).color = 'r';
 end
 
 % save('spatial_models.mat', 'spatial_model');
+
