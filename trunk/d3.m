@@ -2002,10 +2002,3 @@ end
 D3_GLOBAL.last_key_press = key;
 
 
-% --------------------------------------------------------------------
-function trial_new_Callback(hObject, eventdata, handles)
-% hObject    handle to trial_new (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
