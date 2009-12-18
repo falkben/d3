@@ -163,7 +163,7 @@ D3_GLOBAL.d3_analysed.startframe = -2126 ;
 D3_GLOBAL.d3_analysed.endframe = 0 ;
 
 %reset the GUI
-cla(handles.axes_3d,'reset');
+cla(D3_GLOBAL.handles.axes_3d,'reset');
 set(D3_GLOBAL.handles.trial_start_frame_edit,'String','-2126');
 set(D3_GLOBAL.handles.trial_end_frame_edit,'String','0');
 set(D3_GLOBAL.handles.clip_start_c1_frame_edit,'String','-2126');
@@ -176,6 +176,8 @@ set(D3_GLOBAL.handles.trialcode_edit,'String','');
 set(D3_GLOBAL.handles.frame_rate,'String','250');
 set(D3_GLOBAL.handles.dlt_display_edit,'String','DLT not computed');
 set(D3_GLOBAL.handles.quantization_popup,'Value',1);
+
+set(D3_GLOBAL.handles.frame_rate,'BackgroundColor',[1 48/255 48/255]);
 
 % --------------------------------------------------------------------
 function varargout = camera_select_Callback(h, eventdata, handles, varargin)
@@ -1028,6 +1030,8 @@ if ~isempty(D3_GLOBAL.cam(1).name) && ~isempty(D3_GLOBAL.cam(2).name)
         D3_GLOBAL.tcode = [filename(1:11) trial_num];
         set(gcf,'Name',['3-d: ' D3_GLOBAL.tcode],'NumberTitle','off');
         set(handles.trialcode_edit,'string',D3_GLOBAL.tcode);
+    else
+        set(handles.trialcode_edit,'BackgroundColor',[1 48/255 48/255]);
     end
 end
 
@@ -1424,6 +1428,7 @@ global D3_GLOBAL
 
 D3_GLOBAL.tcode = get(handles.trialcode_edit,'string');
 set(gcf,'Name',['3-d: ' D3_GLOBAL.tcode],'NumberTitle','off');
+set(handles.trialcode_edit,'BackgroundColor',[1 1 1]);
 
 
 % --------------------------------------------------------------------
@@ -1584,6 +1589,8 @@ global D3_GLOBAL
 
 D3_GLOBAL.trial_params.fvideo = str2double(get(hObject,'String'));
 set_time_frame_parameters(handles);
+set(handles.frame_rate,'BackgroundColor',[1 1 1]);
+
 
 function set_time_frame_parameters(handles)
 global D3_GLOBAL
