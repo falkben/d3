@@ -2,7 +2,9 @@
 % 2005.04.26 : Save as, fake video file, machine independent paths
 % 2005.04.21 : put changes for ben into changes for tameeka.
 % 2007.0.13  : Auto Tracking feature and reorganization of the Gui
-% appearence
+%              appearence
+% 2010.01.06 : ALL CHANGES SHOULD BE NOTED IN THE D3 SUBVERSION REPOSITORY
+%              LOG (WHEN YOU COMMIT). --Scott Livingston
 
 function varargout = d3(varargin)
 global D3_GLOBAL
@@ -11,7 +13,7 @@ global D3_GLOBAL
 %    FIG = D3 launch d3 GUI.
 %    D3('callback_name', ...) invoke the named callback.
 
-% Last Modified by GUIDE v2.5 05-Nov-2009 14:20:22
+% Last Modified by GUIDE v2.5 06-Jan-2010 18:35:53
 
 if nargin == 0  % LAUNCH GUI
 
@@ -105,9 +107,12 @@ d3version = '2.0';
 disp('D3');
 disp(['Version ' d3version]);
 disp('This version requires MATLAB 7.5 (2007b) or newer (mmreader)');
-disp('Murat Aytekin aytekin@umd.edu');
-disp('Kaushik Ghose kghose@gmail.com');
-disp('');
+disp('Developers:');
+disp('  Murat Aytekin <aytekin@umd.edu>,');
+disp('  Ben Falk <bfalk@umd.edu>,');
+disp('  Kaushik Ghose <kghose@gmail.com>,');
+disp('  Wei Xian <wxian@psyc.umd.edu>,');
+disp('  Scott Livingston <slivingston@caltech.edu>');
 
 if ~ispref('d3_path','video')
     [pathname] = uigetdir(pwd, 'Locate video folder');
@@ -125,6 +130,16 @@ D3_GLOBAL = [];
 % D3_GLOBAL.motus_export_dir = motus_export_dir ;
 
 D3_GLOBAL.handles = handles ;
+
+% These are stored as separate matrices in D3_GLOBAL, and then
+% merged (into a matrix called ignore_segs) when saving trial data
+% to a *_d3.mat type file. These matrices are kept separate when saving
+% to the *.d3 type file (now a field under the whole_trial structure).
+%
+% Engineering notes like this should be moved to a technical document that
+% (fully) describes d3.
+D3_GLOBAL.ignore_segs_cam1 = [];
+D3_GLOBAL.ignore_segs_cam2 = [];
 
 D3_GLOBAL.cam(1).name = [];
 D3_GLOBAL.cam(2).name = [];
@@ -2008,4 +2023,81 @@ end
 
 D3_GLOBAL.last_key_press = key;
 
+
+% --------------------------------------------------------------------
+function menu_tools_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_tools (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menu_ignore_segs_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_ignore_segs (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menu_ignore_segs_cam1_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_ignore_segs_cam1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+global D3_GLOBAL 
+if isempty(D3_GLOBAL.ignore_segs_cam1)
+    igseg_str = '';
+else
+    igseg_str = mat2str( D3_GLOBAL.ignore_segs_cam1 );
+end
+answer = inputdlg( {'Enter Camera 1 ignore segments matrix:'}, ...
+                   'Relative frame number range to ignore...', ...
+                   1, {igseg_str} );
+if isempty(answer)
+    % User hit Cancel; do nothing and return
+    return
+end
+% Catch (and ignore) silly argument; note that it is not verified that
+% given relative frame numbers lie within the 
+ignore_segs_cam = str2num(answer{1});
+if (isempty(ignore_segs_cam) && ~isempty(answer{1}))...
+   || (~isempty(ignore_segs_cam) ...
+       && (size(ignore_segs_cam,2) ~= 2 || any(ignore_segs_cam(:) ~= fix(ignore_segs_cam(:)))))
+    warndlg('Given ignore segments string is invalid; it will be ignored.', 'Invalid input');
+    return
+end
+
+D3_GLOBAL.ignore_segs_cam1 = ignore_segs_cam;
+
+
+% --------------------------------------------------------------------
+function menu_ignore_segs_cam2_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_ignore_segs_cam2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+global D3_GLOBAL 
+if isempty(D3_GLOBAL.ignore_segs_cam2)
+    igseg_str = '';
+else
+    igseg_str = mat2str( D3_GLOBAL.ignore_segs_cam2 );
+end
+answer = inputdlg( {'Enter Camera 2 ignore segments matrix:'}, ...
+                   'Relative frame number range to ignore...', ...
+                   1, {igseg_str} );
+if isempty(answer)
+    % User hit Cancel; do nothing and return
+    return
+end
+% Catch (and ignore) silly argument; note that it is not verified that
+% given relative frame numbers lie within the 
+ignore_segs_cam = str2num(answer{1});
+if (isempty(ignore_segs_cam) && ~isempty(answer{1}))...
+   || (~isempty(ignore_segs_cam) ...
+       && (size(ignore_segs_cam,2) ~= 2 || any(ignore_segs_cam(:) ~= fix(ignore_segs_cam(:)))))
+    warndlg('Given ignore segments string is invalid; it will be ignored.', 'Invalid input');
+    return
+end
+
+D3_GLOBAL.ignore_segs_cam2 = ignore_segs_cam;
 
