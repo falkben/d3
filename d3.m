@@ -85,12 +85,12 @@ end
 function varargout = menu_paths_Callback(h, eventdata, handles, varargin)
 [pathname] = uigetdir(pwd, 'Locate raw video folder (cancel to skip)');
 if ~(pathname==0)
-    setpref('d3_path','video',[pathname]);
+    setpref('d3_path','video',pathname);
 end
 
 [pathname] = uigetdir(pwd, 'Locate folder to save analyzed files (cancel to skip)');
 if ~(pathname==0)
-    setpref('d3_path','analyzed_path',[pathname]);
+    setpref('d3_path','analyzed_path',pathname);
 end
 
 
@@ -116,12 +116,12 @@ disp('  Scott Livingston <slivingston@caltech.edu>');
 
 if ~ispref('d3_path','video')
     [pathname] = uigetdir(pwd, 'Locate video folder');
-    setpref('d3_path','video',[pathname]);
+    setpref('d3_path','video',pathname);
 end
 
 if ~ispref('d3_path','analyzed_path')
     [pathname] = uigetdir(pwd, 'Locate folder to save analyzed files (cancel to skip)');
-    setpref('d3_path','analyzed_path',[pathname]);
+    setpref('d3_path','analyzed_path',pathname);
 end
 
 D3_GLOBAL = [];
@@ -242,7 +242,7 @@ update(handles);
 function varargout = frame_edit_Callback(h, eventdata, handles, varargin)
 global D3_GLOBAL
 
-D3_GLOBAL.current_frame = fix(min(max(1,str2num(get(handles.frame_edit,'string'))), D3_GLOBAL.max_frames))  ;
+D3_GLOBAL.current_frame = fix(min(max(1,str2double(get(handles.frame_edit,'string'))), D3_GLOBAL.max_frames))  ;
 set(handles.frame_slider,'value',D3_GLOBAL.current_frame);
 set(handles.frame_edit,'string',num2str(D3_GLOBAL.current_frame));
 load_video_frame ;
@@ -361,7 +361,7 @@ if filename == 0
 end
 
 if length(filename) > 4
-    if filename(length(filename)-3:length(filename)) ~= '.clb'
+    if ~strcmp(filename(length(filename)-3:length(filename)),'.clb')
         filename = [filename '.clb'];
     end
 else
@@ -369,7 +369,7 @@ else
     filename = [filename '.clb'];
 end
 
-variable = D3_GLOBAL.calibration ;
+variable = D3_GLOBAL.calibration ; %#ok<NASGU>
 save([pathname '/' filename],'variable');
 
 % --------------------------------------------------------------------
@@ -487,7 +487,7 @@ catch
 end;
 [filename, pathname] = uigetfile( '*.d3','Load trial');
 cd(cdir);
-if ~isstr(filename)
+if ~ischar(filename)
     return
 end
 
@@ -620,6 +620,7 @@ switch(mode)
 case 1 %calibration
     %get n points for calib frame and put them in the string for the popup
     try
+        name = cell(size(D3_GLOBAL.calibration.point,1),1);
         for k=1:size(D3_GLOBAL.calibration.point,1)
             name{k} = ['point ' num2str(k)];
         end
@@ -643,6 +644,7 @@ case 1 %calibration
     
 case 2 %digitization
     %get n points for digitization and put them in the string for the popup
+    name = cell(length(D3_GLOBAL.spatial_model.point),1);
     for k=1:length(D3_GLOBAL.spatial_model.point)
         name{k} = D3_GLOBAL.spatial_model.point(k).name;
     end
@@ -722,7 +724,7 @@ case 2 %digitization
                         (1:min(size(D3_GLOBAL.rawdata.smoothened_point(n).cam(D3_GLOBAL.camera).coordinate,1),D3_GLOBAL.current_frame),1);
                     point_y = D3_GLOBAL.rawdata.smoothened_point(n).cam(D3_GLOBAL.camera).coordinate...
                         (1:min(size(D3_GLOBAL.rawdata.smoothened_point(n).cam(D3_GLOBAL.camera).coordinate,1),D3_GLOBAL.current_frame),2);
-                    plot(point_x, point_y, ['w:']);            
+                    plot(point_x, point_y, 'w:');            
                 end
             end
         end   
@@ -1125,7 +1127,7 @@ function get_3d
 global D3_GLOBAL
 
 all_str = get(D3_GLOBAL.handles.smoothing_popup,'string');
-filt_len = str2num(all_str{get(D3_GLOBAL.handles.smoothing_popup,'value')});
+filt_len = str2double(all_str{get(D3_GLOBAL.handles.smoothing_popup,'value')});
 smooth_camera_coords(filt_len);
 
 A = D3_GLOBAL.calibration.A;
@@ -1196,7 +1198,7 @@ end;
 if strcmp(D3_GLOBAL.internal.quantization_level, 'none')
     Mout = Min ;
 else
-    Mout = histeq(Min,str2num(D3_GLOBAL.internal.quantization_level));
+    Mout = histeq(Min,str2double(D3_GLOBAL.internal.quantization_level));
 end
 
 %Mout = moving_average(Min);
@@ -1292,7 +1294,7 @@ update(handles);
 function varargout = smoothing_popup_Callback(h, eventdata, handles, varargin)
 
 all_str = get(gcbo,'string');
-filt_len = str2num(all_str{get(gcbo,'value')});
+filt_len = str2double(all_str{get(gcbo,'value')});
 smooth_camera_coords(filt_len);
 update(handles);
 
@@ -1410,7 +1412,7 @@ answer=inputdlg(prompt,dlgTitle,lineNo,def);
 if isempty(answer)
     return;
 end
-D3_GLOBAL.internal.cam_speed(1) = str2num(answer{1}) ;
+D3_GLOBAL.internal.cam_speed(1) = str2double(answer{1}) ;
 
 % --------------------------------------------------------------------
 function varargout = cam2_speed_Callback(h, eventdata, handles, varargin)
@@ -1425,7 +1427,7 @@ answer=inputdlg(prompt,dlgTitle,lineNo,def);
 if isempty(answer)
     return;
 end
-D3_GLOBAL.internal.cam_speed(2) = str2num(answer{1}) ;
+D3_GLOBAL.internal.cam_speed(2) = str2double(answer{1}) ;
 
 
 
@@ -1450,7 +1452,7 @@ set(handles.trialcode_edit,'BackgroundColor',[1 1 1]);
 function varargout = trial_start_frame_edit_Callback(h, eventdata, handles, varargin)
 global D3_GLOBAL
 
-D3_GLOBAL.trial_params.trial_start = str2num(get(gcbo,'string')) / D3_GLOBAL.trial_params.fvideo  ;
+D3_GLOBAL.trial_params.trial_start = str2double(get(gcbo,'string')) / D3_GLOBAL.trial_params.fvideo  ;
 set(handles.trial_start_edit,'string',num2str(D3_GLOBAL.trial_params.trial_start));
 D3_GLOBAL.d3_analysed.startframe =  round(D3_GLOBAL.trial_params.trial_start * D3_GLOBAL.trial_params.fvideo);
 set(handles.db_frame_text,'string',[ num2str(D3_GLOBAL.d3_analysed.startframe) ' , ' num2str(D3_GLOBAL.d3_analysed.endframe)]);
@@ -1464,7 +1466,7 @@ update(handles);
 function varargout = trial_end_frame_edit_Callback(h, eventdata, handles, varargin)
 global D3_GLOBAL
 
-D3_GLOBAL.trial_params.trial_end = str2num(get(gcbo,'string')) / D3_GLOBAL.trial_params.fvideo ;
+D3_GLOBAL.trial_params.trial_end = str2double(get(gcbo,'string')) / D3_GLOBAL.trial_params.fvideo ;
 set(handles.trial_end_edit,'string',num2str(D3_GLOBAL.trial_params.trial_end));
 D3_GLOBAL.d3_analysed.endframe =  round(D3_GLOBAL.trial_params.trial_end * D3_GLOBAL.trial_params.fvideo);
 set(handles.db_frame_text,'string',[ num2str(D3_GLOBAL.d3_analysed.startframe) ' , ' num2str(D3_GLOBAL.d3_analysed.endframe)]);
@@ -1478,15 +1480,15 @@ update(handles);
 function varargout = clip_start_c1_frame_edit_Callback(h, eventdata, handles, varargin)
 global D3_GLOBAL
 
-D3_GLOBAL.trial_params.clip(1).start = str2num(get(gcbo,'string')) / D3_GLOBAL.trial_params.fvideo  ; %video clip 1 starts at....
+D3_GLOBAL.trial_params.clip(1).start = str2double(get(gcbo,'string')) / D3_GLOBAL.trial_params.fvideo  ; %video clip 1 starts at....
 set(handles.clip_start_c1_edit,'string',num2str(D3_GLOBAL.trial_params.clip(1).start))
 set(handles.trial_start_edit,'string',num2str(D3_GLOBAL.trial_params.clip(1).start));%this means that we'll get all of the clip #1
 set(handles.clip_start_c2_edit,'string',num2str(D3_GLOBAL.trial_params.clip(1).start));%this means that we'll get all of the clip #2
 set(handles.trial_start_frame_edit,'string',num2str(round(D3_GLOBAL.trial_params.clip(1).start*D3_GLOBAL.trial_params.fvideo)));%this means that we'll get all of the clip #1
 set(handles.clip_start_c2_frame_edit,'string',num2str(round(D3_GLOBAL.trial_params.clip(1).start*D3_GLOBAL.trial_params.fvideo)));%this means that we'll get all of the clip #2
 
-D3_GLOBAL.trial_params.trial_start = str2num(get(handles.trial_start_edit,'string')) ;
-D3_GLOBAL.trial_params.clip(2).start = str2num(get(handles.clip_start_c2_edit,'string'));
+D3_GLOBAL.trial_params.trial_start = str2double(get(handles.trial_start_edit,'string')) ;
+D3_GLOBAL.trial_params.clip(2).start = str2double(get(handles.clip_start_c2_edit,'string'));
 
 D3_GLOBAL.d3_analysed.startframe =  round(D3_GLOBAL.trial_params.trial_start * D3_GLOBAL.trial_params.fvideo);
 D3_GLOBAL.d3_analysed.endframe =  round(D3_GLOBAL.trial_params.trial_end * D3_GLOBAL.trial_params.fvideo);
@@ -1501,14 +1503,14 @@ update(handles);
 function varargout = clip_start_c2_frame_edit_Callback(h, eventdata, handles, varargin)
 global D3_GLOBAL
 
-D3_GLOBAL.trial_params.clip(2).start = str2num(get(gcbo,'string')) /D3_GLOBAL.trial_params.fvideo ;
+D3_GLOBAL.trial_params.clip(2).start = str2double(get(gcbo,'string')) /D3_GLOBAL.trial_params.fvideo ;
 set(handles.clip_start_c2_edit,'string',num2str(D3_GLOBAL.trial_params.clip(2).start))
-existingtrialstartval = str2num(get(handles.trial_start_edit,'string')) ;
+existingtrialstartval = str2double(get(handles.trial_start_edit,'string')) ;
 if D3_GLOBAL.trial_params.clip(2).start > existingtrialstartval
     set(handles.trial_start_edit,'string',num2str(D3_GLOBAL.trial_params.clip(2).start));%this means that we'll get all of the clip #2
     set(handles.trial_start_frame_edit,'string',num2str(round(D3_GLOBAL.trial_params.clip(2).start*D3_GLOBAL.trial_params.fvideo)));%this means that we'll get all of the clip #1
 end
-D3_GLOBAL.trial_params.trial_start = str2num(get(handles.trial_start_edit,'string')) ;
+D3_GLOBAL.trial_params.trial_start = str2double(get(handles.trial_start_edit,'string')) ;
 
 
 
@@ -1525,15 +1527,15 @@ update(handles);
 function varargout = clip_start_c1_edit_Callback(h, eventdata, handles, varargin)
 global D3_GLOBAL
 
-D3_GLOBAL.trial_params.clip(1).start = str2num(get(gcbo,'string')) ; %video clip 1 starts at....
+D3_GLOBAL.trial_params.clip(1).start = str2double(get(gcbo,'string')) ; %video clip 1 starts at....
 set(handles.clip_start_c1_frame_edit,'string',num2str(round(D3_GLOBAL.trial_params.clip(1).start * D3_GLOBAL.trial_params.fvideo)));
 
-%existingtrialstartval = str2num(get(handles.trial_start_edit,'string')) ;
+%existingtrialstartval = str2double(get(handles.trial_start_edit,'string')) ;
 set(handles.trial_start_edit,'string',num2str(D3_GLOBAL.trial_params.clip(1).start));%this means that we'll get all of the clip #1
 set(handles.clip_start_c2_edit,'string',num2str(D3_GLOBAL.trial_params.clip(1).start));%this means that we'll get all of the clip #2
 
-D3_GLOBAL.trial_params.trial_start = str2num(get(handles.trial_start_edit,'string')) ;
-D3_GLOBAL.trial_params.clip(2).start = str2num(get(handles.clip_start_c2_edit,'string'));
+D3_GLOBAL.trial_params.trial_start = str2double(get(handles.trial_start_edit,'string')) ;
+D3_GLOBAL.trial_params.clip(2).start = str2double(get(handles.clip_start_c2_edit,'string'));
 
 set(handles.trial_start_frame_edit,'string',num2str(round(D3_GLOBAL.trial_params.trial_start * D3_GLOBAL.trial_params.fvideo)));
 set(handles.clip_start_c2_frame_edit,'string',num2str(round(D3_GLOBAL.trial_params.clip(2).start * D3_GLOBAL.trial_params.fvideo)));
@@ -1550,14 +1552,14 @@ update(handles);
 function varargout = clip_start_c2_edit_Callback(h, eventdata, handles, varargin)
 global D3_GLOBAL
 
-D3_GLOBAL.trial_params.clip(2).start = str2num(get(gcbo,'string')) ;
+D3_GLOBAL.trial_params.clip(2).start = str2double(get(gcbo,'string')) ;
 set(handles.clip_start_c2_frame_edit,'string',num2str(round(D3_GLOBAL.trial_params.clip(2).start * D3_GLOBAL.trial_params.fvideo)));
-existingtrialstartval = str2num(get(handles.trial_start_edit,'string')) ;
+existingtrialstartval = str2double(get(handles.trial_start_edit,'string')) ;
 if D3_GLOBAL.trial_params.clip(2).start > existingtrialstartval
     set(handles.trial_start_edit,'string',num2str(D3_GLOBAL.trial_params.clip(2).start));%this means that we'll get all of the clip #2
     set(handles.trial_start_frame_edit,'string',num2str(round(D3_GLOBAL.trial_params.clip(2).start * D3_GLOBAL.trial_params.fvideo)));
 end
-D3_GLOBAL.trial_params.trial_start = str2num(get(handles.trial_start_edit,'string')) ;
+D3_GLOBAL.trial_params.trial_start = str2double(get(handles.trial_start_edit,'string')) ;
 D3_GLOBAL.d3_analysed.startframe =  round(D3_GLOBAL.trial_params.trial_start * D3_GLOBAL.trial_params.fvideo);
 D3_GLOBAL.d3_analysed.endframe =  round(D3_GLOBAL.trial_params.trial_end * D3_GLOBAL.trial_params.fvideo);
 set(handles.db_frame_text,'string',[ num2str(D3_GLOBAL.d3_analysed.startframe) ' , ' num2str(D3_GLOBAL.d3_analysed.endframe)]);
@@ -1570,7 +1572,7 @@ update(handles);
 function varargout = trial_start_edit_Callback(h, eventdata, handles, varargin)
 global D3_GLOBAL
 
-D3_GLOBAL.trial_params.trial_start = str2num(get(gcbo,'string')) ;
+D3_GLOBAL.trial_params.trial_start = str2double(get(gcbo,'string')) ;
 set(handles.trial_start_frame_edit,'string',num2str(round(D3_GLOBAL.trial_params.trial_start * D3_GLOBAL.trial_params.fvideo)));
 set(handles.db_frame_text,'string',[ num2str(D3_GLOBAL.d3_analysed.startframe) ' , ' num2str(D3_GLOBAL.d3_analysed.endframe)]);
 
@@ -1582,7 +1584,7 @@ update(handles);
 function varargout = trial_end_edit_Callback(h, eventdata, handles, varargin)
 global D3_GLOBAL
 
-D3_GLOBAL.trial_params.trial_end = str2num(get(gcbo,'string'));
+D3_GLOBAL.trial_params.trial_end = str2double(get(gcbo,'string'));
 set(handles.trial_end_frame_edit,'string',num2str(round(D3_GLOBAL.trial_params.trial_end * D3_GLOBAL.trial_params.fvideo)));
 set(handles.db_frame_text,'string',[ num2str(D3_GLOBAL.d3_analysed.startframe) ' , ' num2str(D3_GLOBAL.d3_analysed.endframe)]);
 
@@ -1640,7 +1642,7 @@ end
 % function varargout = interaction_time_edit_Callback(h, eventdata, handles, varargin)
 % global D3_GLOBAL
 % 
-% D3_GLOBAL.trial_params.interaction_time = str2num(get(gcbo,'string'));
+% D3_GLOBAL.trial_params.interaction_time = str2double(get(gcbo,'string'));
 
 
 % --------------------------------------------------------------------
@@ -1764,8 +1766,8 @@ function Auto_Track_pushbutton_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % read there a start frame
-Ref_Frame = str2num(get(handles.Auto_Track_Reference_Frame_edit,'string'));
-End_Frame = str2num(get(handles.Auto_Tracking_End_Frame_edit,'string'));
+Ref_Frame = str2double(get(handles.Auto_Track_Reference_Frame_edit,'string'));
+End_Frame = str2double(get(handles.Auto_Tracking_End_Frame_edit,'string'));
 set(handles.Auto_Track_Stop_pushbutton,'Enable','on');
 set(handles.Auto_Track_Stop_pushbutton,'UserData',0);
 handles = Auto_Track (handles, Ref_Frame, End_Frame);
@@ -1953,7 +1955,7 @@ for k = beg_frame:N
     x = mean(X(indx));
     y = mean(Y(indx));
 
-    coord(k,:) = [x y];
+%     coord(k,:) = [x y];
     
     D3_GLOBAL.internal.x = x;%we need this since this fun returns corners of a voxel that we clicked (we think)
     D3_GLOBAL.internal.y = y;    
@@ -2059,7 +2061,7 @@ if isempty(answer)
 end
 % Catch (and ignore) silly argument; note that it is not verified that
 % given relative frame numbers lie within the 
-ignore_segs_cam = str2num(answer{1});
+ignore_segs_cam = str2double(answer{1});
 if (isempty(ignore_segs_cam) && ~isempty(answer{1}))...
    || (~isempty(ignore_segs_cam) ...
        && (size(ignore_segs_cam,2) ~= 2 || any(ignore_segs_cam(:) ~= fix(ignore_segs_cam(:)))))
@@ -2091,7 +2093,7 @@ if isempty(answer)
 end
 % Catch (and ignore) silly argument; note that it is not verified that
 % given relative frame numbers lie within the 
-ignore_segs_cam = str2num(answer{1});
+ignore_segs_cam = str2double(answer{1});
 if (isempty(ignore_segs_cam) && ~isempty(answer{1}))...
    || (~isempty(ignore_segs_cam) ...
        && (size(ignore_segs_cam,2) ~= 2 || any(ignore_segs_cam(:) ~= fix(ignore_segs_cam(:)))))
