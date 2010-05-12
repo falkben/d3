@@ -2061,7 +2061,7 @@ if isempty(answer)
 end
 % Catch (and ignore) silly argument; note that it is not verified that
 % given relative frame numbers lie within the 
-ignore_segs_cam = str2double(answer{1});
+ignore_segs_cam = str2num(answer{1});
 if (isempty(ignore_segs_cam) && ~isempty(answer{1}))...
    || (~isempty(ignore_segs_cam) ...
        && (size(ignore_segs_cam,2) ~= 2 || any(ignore_segs_cam(:) ~= fix(ignore_segs_cam(:)))))
@@ -2093,7 +2093,7 @@ if isempty(answer)
 end
 % Catch (and ignore) silly argument; note that it is not verified that
 % given relative frame numbers lie within the 
-ignore_segs_cam = str2double(answer{1});
+ignore_segs_cam = str2num(answer{1});
 if (isempty(ignore_segs_cam) && ~isempty(answer{1}))...
    || (~isempty(ignore_segs_cam) ...
        && (size(ignore_segs_cam,2) ~= 2 || any(ignore_segs_cam(:) ~= fix(ignore_segs_cam(:)))))
