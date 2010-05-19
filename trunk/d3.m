@@ -83,12 +83,25 @@ end
 % --------------------------------------------------------------------
 % called when we wanna change paths
 function varargout = menu_paths_Callback(h, eventdata, handles, varargin)
-[pathname] = uigetdir(pwd, 'Locate raw video folder (cancel to skip)');
+
+if ispref('d3_path','video') && exist(getpref('d3_path','video'),'dir')
+    video_dir = getpref('d3_path','video');
+else
+    video_dir = pwd;
+end
+
+if ispref('d3_path','analyzed_path') && exist(getpref('d3_path','analyzed_path'),'dir')
+    analyzed_dir =getpref('d3_path','analyzed_path');
+else
+    analyzed_dir = pwd;
+end
+
+[pathname] = uigetdir(video_dir, 'Locate raw video folder (cancel to skip)');
 if ~(pathname==0)
     setpref('d3_path','video',pathname);
 end
 
-[pathname] = uigetdir(pwd, 'Locate folder to save analyzed files (cancel to skip)');
+[pathname] = uigetdir(analyzed_dir, 'Locate folder to save analyzed files (cancel to skip)');
 if ~(pathname==0)
     setpref('d3_path','analyzed_path',pathname);
 end
