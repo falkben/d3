@@ -84,13 +84,13 @@ end
 % called when we wanna change paths
 function varargout = menu_paths_Callback(h, eventdata, handles, varargin)
 
-if ispref('d3_path','video') && exist(getpref('d3_path','video'),'dir')
+if getpref('d3_path','video') && exist(getpref('d3_path','video'),'dir')
     video_dir = getpref('d3_path','video');
 else
     video_dir = pwd;
 end
 
-if ispref('d3_path','analyzed_path') && exist(getpref('d3_path','analyzed_path'),'dir')
+if getpref('d3_path','analyzed_path') && exist(getpref('d3_path','analyzed_path'),'dir')
     analyzed_dir =getpref('d3_path','analyzed_path');
 else
     analyzed_dir = pwd;
