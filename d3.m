@@ -1688,9 +1688,9 @@ catch
     disp('Path does not exist.  Update your analyzed video file dirctory.');
 end
 
+try
 [filename, pathname] = uiputfile( [ D3_GLOBAL.tcode '_' num2str(D3_GLOBAL.d3_analysed.startframe) '_d3.mat'],'Save trial as');
 cd(cdir);
-
 if filename == 0
     disp('Save cancelled.')
     return
@@ -1699,6 +1699,11 @@ end
 fn = [pathname filename];
 
 save_d3_mat_file(fn, D3_GLOBAL);
+
+catch
+    cd(cdir);
+    errordlg('mat file not saved','Error');
+end
 
 % this function follows the point order as given in the spatial model
 % --------------------------------------------------------------------
