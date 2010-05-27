@@ -94,6 +94,8 @@ for n =1:length(D3_GLOBAL.spatial_model.point)
     end
 end    
 
+disp('spatial model saved');
+
 closereq
 
 

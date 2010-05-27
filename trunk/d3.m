@@ -13,7 +13,7 @@ global D3_GLOBAL
 %    FIG = D3 launch d3 GUI.
 %    D3('callback_name', ...) invoke the named callback.
 
-% Last Modified by GUIDE v2.5 06-Jan-2010 18:35:53
+% Last Modified by GUIDE v2.5 27-May-2010 13:51:24
 
 if nargin == 0  % LAUNCH GUI
 
@@ -311,7 +311,7 @@ load_spatial_model(handles);
 function load_spatial_model(handles)
 global D3_GLOBAL
 
-waitfor(select_spatial_model) ;
+waitfor(select_spatial_model);
 
 for n = 1:length(D3_GLOBAL.spatial_model.point)
     D3_GLOBAL.reconstructed.point(n).pos = [];
@@ -321,6 +321,13 @@ if (get(handles.mode_popup,'value') == 2) %digitizing, need to update the spatia
 end
 update(handles);
 
+
+% --------------------------------------------------------------------
+function new_spatial_model_Callback(hObject, eventdata, handles)
+% hObject    handle to new_spatial_model (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+waitfor(new_spatial_model);
 
 
 % open GUI to handle new calibration file
@@ -2120,4 +2127,3 @@ if (isempty(ignore_segs_cam) && ~isempty(answer{1}))...
 end
 
 D3_GLOBAL.ignore_segs_cam2 = ignore_segs_cam;
-
