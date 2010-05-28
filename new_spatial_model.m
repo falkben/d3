@@ -5,35 +5,64 @@ function varargout = new_spatial_model(varargin)
 
 % Last Modified by GUIDE v2.5 27-May-2010 15:50:41
 
-if nargin == 0  % LAUNCH GUI
-
-	fig = openfig(mfilename,'reuse');
-
-	% Use system color scheme for figure:
-	set(fig,'Color',get(0,'defaultUicontrolBackgroundColor'));
-
-	% Generate a structure of handles to pass to callbacks, and store it. 
-	handles = guihandles(fig);
-    handles = initialize(handles,1);
-	guidata(fig, handles);
-
-	if nargout > 0
-		varargout{1} = fig;
-	end
-
-elseif ischar(varargin{1}) % INVOKE NAMED SUBFUNCTION OR CALLBACK
-
-	try
-		if (nargout)
-			[varargout{1:nargout}] = feval(varargin{:}); % FEVAL switchyard
-		else
-			feval(varargin{:}); % FEVAL switchyard
-		end
-	catch
-		disp(lasterr);
-	end
-
+% Begin initialization code - DO NOT EDIT
+gui_Singleton = 1;
+gui_State = struct('gui_Name',       mfilename, ...
+                   'gui_Singleton',  gui_Singleton, ...
+                   'gui_OpeningFcn', @new_spatial_model_OpeningFcn, ...
+                   'gui_OutputFcn',  @new_spatial_model_OutputFcn, ...
+                   'gui_LayoutFcn',  [] , ...
+                   'gui_Callback',   []);
+if nargin && ischar(varargin{1})
+    gui_State.gui_Callback = str2func(varargin{1});
 end
+
+if nargout
+    [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+else
+    gui_mainfcn(gui_State, varargin{:});
+end
+% End initialization code - DO NOT EDIT
+
+
+% --- Executes just before new_spatial_model is made visible.
+function new_spatial_model_OpeningFcn(hObject, eventdata, handles, varargin)
+% This function has no output args, see OutputFcn.
+% hObject    handle to figure
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+% varargin   command line arguments to new_spatial_model (see VARARGIN)
+
+% Choose default command line output for new_spatial_model
+handles.output = hObject;
+
+if ~isempty(varargin) && isstruct(varargin{1})
+    handles.spatial_model = varargin{1};
+    handles.current_point = 1;
+    handles.model_number = varargin{2};
+    set(handles.figure1,'Name','Edit Spatial Model');
+else
+    handles = initialize(handles,1);
+end
+
+update(handles);
+
+% Update handles structure
+guidata(hObject, handles);
+
+% UIWAIT makes new_spatial_model wait for user response (see UIRESUME)
+% uiwait(handles.figure1);
+
+% --- Outputs from this function are returned to the command line.
+function varargout = new_spatial_model_OutputFcn(hObject, eventdata, handles) 
+% varargout  cell array for returning output args (see VARARGOUT);
+% hObject    handle to figure
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Get default command line output from handles structure
+varargout{1} = handles.output;
+
 
 function handles = initialize(handles,current_point)
 
@@ -211,15 +240,19 @@ end
 function varargout = ok_button_Callback(h, eventdata, handles, varargin)
 
 load spatial_models
-names = {spatial_model.name};
 
-%error checking
-if ~isempty(find(strcmp(handles.spatial_model.name,names), 1)) || isempty(handles.spatial_model.name) || isempty(handles.spatial_model.point(end).name)
-    return;
+if isfield(handles,'model_number')
+    spatial_model(handles.model_number) = handles.spatial_model;
+else
+    %error checking
+    names = {spatial_model.name};
+    if ~isempty(find(strcmp(handles.spatial_model.name,names), 1)) || isempty(handles.spatial_model.name) || isempty(handles.spatial_model.point(end).name)
+        return;
+    end
+
+    %add handles.spatial_model to spatial_models
+    spatial_model(end+1)=handles.spatial_model;
 end
-
-%add handles.spatial_model to spatial_models
-spatial_model(end+1)=handles.spatial_model;
 
 %save spatial models
 save('spatial_models.mat','spatial_model','-mat');
