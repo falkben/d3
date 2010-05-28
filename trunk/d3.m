@@ -13,7 +13,7 @@ global D3_GLOBAL
 %    FIG = D3 launch d3 GUI.
 %    D3('callback_name', ...) invoke the named callback.
 
-% Last Modified by GUIDE v2.5 27-May-2010 13:51:24
+% Last Modified by GUIDE v2.5 28-May-2010 14:58:49
 
 if nargin == 0  % LAUNCH GUI
 
@@ -2127,3 +2127,12 @@ if (isempty(ignore_segs_cam) && ~isempty(answer{1}))...
 end
 
 D3_GLOBAL.ignore_segs_cam2 = ignore_segs_cam;
+
+
+% --------------------------------------------------------------------
+function manage_spatial_models_Callback(hObject, eventdata, handles)
+% hObject    handle to manage_spatial_models (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+waitfor(manage_spatial_models);
+
