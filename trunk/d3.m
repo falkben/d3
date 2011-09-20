@@ -1101,7 +1101,11 @@ frame_cam_speedadj_array = frame_cam_speedadj;
 
 %[avi_hdl, avi_inf] = dxAviOpen(D3_GLOBAL.cam(n).name);
 
-obj = mmreader(D3_GLOBAL.cam(n).name);
+if exist(D3_GLOBAL.cam(n).name,'file')
+  obj = mmreader(D3_GLOBAL.cam(n).name);
+else
+  disp('cant find video file');
+end
 try
     %D3_GLOBAL.image(n).c = aviread(D3_GLOBAL.cam(n).name,D3_GLOBAL.current_frame);
     %pixmap = dxAviReadMex(avi_hdl, frame_cam_speedadj_array(n));
