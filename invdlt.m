@@ -1,5 +1,4 @@
 function [xy] = invdlt(A,XYZ)
-% function [xy] = invdlt(A,XYZ)
 % Description:	This program calculates the local (camera) xy coordinates
 %		of a known point XYZ in space using the known DLT coefficients
 %		of that specific camera.
@@ -23,12 +22,12 @@ function [xy] = invdlt(A,XYZ)
 % CHECKING PROPER SIZE OF INPUT MATRICES
 if size(XYZ,2)~=3,
  disp('Try again! Your input matrix XYZ did not contain enough columns'), 
-  break
+  return
 end
 
 [s1,s2]=size(A);
 if s1~=11 | s2~=1
- disp('Try again! Your input DLT matrix does not have the right size'), break
+ disp('Try again! Your input DLT matrix does not have the right size'), return
 end
 
 % RENAMING 
