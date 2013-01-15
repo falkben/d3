@@ -115,11 +115,11 @@ global running
 
 running = 0;
 
-d3version = '2.0';
+d3version = '2.1';
 
 disp('D3');
 disp(['Version ' d3version]);
-disp('This version requires MATLAB 7.5 (2007b) or newer (mmreader)');
+disp('This version requires MATLAB R2010b or newer (VideoReader)');
 disp('Developers:');
 disp('  Murat Aytekin <aytekin@umd.edu>,');
 disp('  Ben Falk <bfalk@umd.edu>,');
@@ -899,8 +899,11 @@ else
     %     pixmap = reshape(pixmap/255,[avi_inf.Height,avi_inf.Width,3]);
     %     D3_GLOBAL.image(D3_GLOBAL.camera).c.cdata = pixmap;
     
-    
-    obj = mmreader(D3_GLOBAL.cam(D3_GLOBAL.camera).name);
+    if (datenum(version('-date')) >= datenum('3-September-2010'))
+      obj = VideoReader(D3_GLOBAL.cam(D3_GLOBAL.camera).name);
+    else
+      obj = mmreader(D3_GLOBAL.cam(D3_GLOBAL.camera).name);
+    end
     
     if obj.NumberOfFrames ~= 1 %a calibration with only one frame breaks the reading of the mmreader object
       
@@ -1102,7 +1105,11 @@ frame_cam_speedadj_array = frame_cam_speedadj;
 %[avi_hdl, avi_inf] = dxAviOpen(D3_GLOBAL.cam(n).name);
 
 if exist(D3_GLOBAL.cam(n).name,'file')
-  obj = mmreader(D3_GLOBAL.cam(n).name);
+  if (datenum(version('-date')) >= datenum('3-September-2010'))
+    obj = VideoReader(D3_GLOBAL.cam(n).name);
+  else
+    obj = mmreader(D3_GLOBAL.cam(n).name);
+  end
 else
   disp('cant find video file');
 end
@@ -1913,17 +1920,11 @@ end;
 
 colormap gray
 
-% [avi_hdl, avi_inf] = dxAviOpen(file);
-% %a = aviread(file,cam_offset(n)+Ref_Frame_Ind + 1);
-%
-% %getting the compressed video files
-% pixmap = dxAviReadMex(avi_hdl, cam_offset(n)+Ref_Frame_Ind + 1);
-% pixmap = reshape(pixmap/255,[avi_inf.Height,avi_inf.Width,3]);
-% a.cdata = pixmap;
-%
-% dxAviCloseMex(avi_hdl);
-
-obj = mmreader(file);
+if (datenum(version('-date')) >= datenum('3-September-2010'))
+  obj = VideoReader(file);
+else
+  obj = mmreader(file);
+end
 
 a.cdata = read(obj, cam_offset(n)+Ref_Frame_Ind + 1);
 
