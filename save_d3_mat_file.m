@@ -6,7 +6,9 @@ startframe = D3_GLOBAL.d3_analysed.startframe;
 d3_analysed = D3_GLOBAL.d3_analysed;
 d3_analysed.trialcode = tcode;
 d3_analysed.fvideo = D3_GLOBAL.trial_params.fvideo;
-d3_analysed.ignore_segs = [D3_GLOBAL.ignore_segs_cam1; D3_GLOBAL.ignore_segs_cam2];
+if isfield(D3_GLOBAL,'ignore_segs_cam1') && isfield(D3_GLOBAL,'ignore_segs_cam2')
+  d3_analysed.ignore_segs = [D3_GLOBAL.ignore_segs_cam1; D3_GLOBAL.ignore_segs_cam2];
+end
 
 for n = 1:length(D3_GLOBAL.spatial_model.point)
     d3_analysed.object(n).name = D3_GLOBAL.spatial_model.point(n).name ;
