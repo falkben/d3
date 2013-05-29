@@ -13,7 +13,7 @@ global D3_GLOBAL
 %    FIG = D3 launch d3 GUI.
 %    D3('callback_name', ...) invoke the named callback.
 
-% Last Modified by GUIDE v2.5 17-Jan-2012 14:02:25
+% Last Modified by GUIDE v2.5 29-May-2013 13:30:33
 
 if nargin == 0  % LAUNCH GUI
   
@@ -1944,7 +1944,8 @@ else
 end;
 curr_frame = double(image_manipulation(curr_frame));
 qwe = (curr_frame-Ref_Frame);%20;
-thr = 1.5*std((qwe(:))); %15; %20
+thr_mult = str2double(get(handles.auto_track_thresh,'String'));
+thr = thr_mult*std((qwe(:))); %15; %20
 qwe = qwe > thr;
 imagesc(curr_frame);
 
@@ -2140,3 +2141,27 @@ function manage_spatial_models_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 waitfor(manage_spatial_models);
+
+
+
+function auto_track_thresh_Callback(hObject, eventdata, handles)
+% hObject    handle to auto_track_thresh (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of auto_track_thresh as text
+%        str2double(get(hObject,'String')) returns contents of auto_track_thresh as a double
+set(hObject,'String',num2str(str2double(get(hObject,'String'))));
+
+
+% --- Executes during object creation, after setting all properties.
+function auto_track_thresh_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to auto_track_thresh (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
