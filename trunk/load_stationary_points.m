@@ -39,7 +39,9 @@ end
 
 load([pathname filename],'-MAT');
 
-if (~strcmp(whole_trial.spatial_model.name,D3_GLOBAL.spatial_model.name) || ~strcmp([whole_trial.spatial_model.point(:).name],[D3_GLOBAL.spatial_model.point(:).name]))
+if ~strcmp([whole_trial.spatial_model.point(:).name],[D3_GLOBAL.spatial_model.point(:).name])...
+    || ~strcmp([whole_trial.spatial_model.point(:).color],[D3_GLOBAL.spatial_model.point(:).color])...
+    || ~isequal([whole_trial.spatial_model.point(:).stationary],[D3_GLOBAL.spatial_model.point(:).stationary])
     disp('Spatial models not compatible.');
     return;
 end
