@@ -3,7 +3,7 @@ function varargout = new_spatial_model(varargin)
 %    FIG = NEW_SPATIAL_MODEL launch new_spatial_model GUI.
 %    NEW_SPATIAL_MODEL('callback_name', ...) invoke the named callback.
 
-% Last Modified by GUIDE v2.5 27-May-2010 15:50:41
+% Last Modified by GUIDE v2.5 04-Jun-2013 13:17:52
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -306,5 +306,25 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
+
+% --- Executes on button press in from_file_pushbutton.
+function from_file_pushbutton_Callback(hObject, eventdata, handles)
+% hObject    handle to from_file_pushbutton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+if ispref('d3_path','analyzed_path')
+  pn = [getpref('d3_path','analyzed_path') '\'];
+else
+  pn = './';
+end
+[filename, pathname] = uigetfile([pn '*.d3'],'Load trial for extracting spatial model');
+if isequal(filename,0)
+  return;
+end
+ext_d3 = load([pathname filename],'-mat');
+handles.spatial_model = ext_d3.whole_trial.spatial_model;
+handles.current_point = 1;
+update(handles);
+guidata(hObject,handles);
 
 
