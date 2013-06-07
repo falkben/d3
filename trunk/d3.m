@@ -2115,7 +2115,7 @@ if isempty(D3_GLOBAL.ignore_segs_cam2)
 else
   igseg_str = mat2str( D3_GLOBAL.ignore_segs_cam2 );
 end
-answer = inputdlg( {'Enter Camera 2 ignore segments matrix:'}, ...
+answer = inputdlg( {'Enter Camera 2 ignore segments matrix (format: clip1start clip1end; clip2start clip2end):'}, ...
   'Relative frame number range to ignore...', ...
   1, {igseg_str} );
 if isempty(answer)
@@ -2125,9 +2125,10 @@ end
 % Catch (and ignore) silly argument; note that it is not verified that
 % given relative frame numbers lie within the
 ignore_segs_cam = str2num(answer{1});
-if (isempty(ignore_segs_cam) && ~isempty(answer{1}))...
-    || (~isempty(ignore_segs_cam) ...
-    && (size(ignore_segs_cam,2) ~= 2 || any(ignore_segs_cam(:) ~= fix(ignore_segs_cam(:)))))
+if (isempty(ignore_segs_cam) && ~isempty(answer{1}))... %if there is a value entered that wasn't converted to a num
+    || (~isempty(ignore_segs_cam) ... %got something 
+    && (size(ignore_segs_cam,2) ~= 2 || ... %it's a column vector?
+    any(ignore_segs_cam(:) ~= fix(ignore_segs_cam(:)))))
   warndlg('Given ignore segments string is invalid; it will be ignored.', 'Invalid input');
   return
 end
