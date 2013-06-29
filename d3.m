@@ -1,8 +1,3 @@
-%Change log
-% 2005.04.26 : Save as, fake video file, machine independent paths
-% 2005.04.21 : put changes for ben into changes for tameeka.
-% 2007.0.13  : Auto Tracking feature and reorganization of the Gui
-%              appearence
 % 2010.01.06 : ALL CHANGES SHOULD BE NOTED IN THE D3 SUBVERSION REPOSITORY
 %              LOG (WHEN YOU COMMIT). --Scott Livingston
 
@@ -45,41 +40,6 @@ elseif ischar(varargin{1}) % INVOKE NAMED SUBFUNCTION OR CALLBACK
   
 end
 
-
-%| ABOUT CALLBACKS:
-%| GUIDE automatically appends subfunction prototypes to this file, and
-%| sets objects' callback properties to call them through the FEVAL
-%| switchyard above. This comment describes that mechanism.
-%|
-%| Each callback subfunction declaration has the following form:
-%| <SUBFUNCTION_NAME>(H, EVENTDATA, HANDLES, VARARGIN)
-%|
-%| The subfunction name is composed using the object's Tag and the
-%| callback type separated by '_', e.g. 'slider2_Callback',
-%| 'figure1_CloseRequestFcn', 'axis1_ButtondownFcn'.
-%|
-%| H is the callback object's handle (obtained using GCBO).
-%|
-%| EVENTDATA is empty, but reserved for future use.
-%|
-%| HANDLES is a structure containing handles of components in GUI using
-%| tags as fieldnames, e.g. handles.figure1, handles.slider2. This
-%| structure is created at GUI startup using GUIHANDLES and stored in
-%| the figure's application data using GUIDATA. A copy of the structure
-%| is passed to each callback.  You can store additional information in
-%| this structure at GUI startup, and you can change the structure
-%| during callbacks.  Call guidata(h, handles) after changing your
-%| copy to replace the stored original so that subsequent callbacks see
-%| the updates. Type "help guihandles" and "help guidata" for more
-%| information.
-%|
-%| VARARGIN contains any extra arguments you have passed to the
-%| callback. Specify the extra arguments by editing the callback
-%| property in the inspector. By default, GUIDE sets the property to:
-%| <MFILENAME>('<SUBFUNCTION_NAME>', gcbo, [], guidata(gcbo))
-%| Add any extra arguments after the last argument, before the final
-%| closing parenthesis.
-
 % --------------------------------------------------------------------
 % called when we wanna change paths
 function varargout = menu_paths_Callback(h, eventdata, handles, varargin)
@@ -105,7 +65,6 @@ end
 if ~(pathname==0)
   setpref('d3_path','analyzed_path',pathname);
 end
-
 
 
 %called when d3 starts up, loads preferences
@@ -214,7 +173,7 @@ D3_GLOBAL.camera = get(handles.camera_select,'value');
 
 %because the other camera could have a different image and needs updating
 try
-  load_video_frame;
+  load_video_frame(false);
   update_cam_fname_edit(handles);
 catch
 end
@@ -248,7 +207,7 @@ end
 D3_GLOBAL.current_frame = fix(get(handles.frame_slider,'value'));
 set(handles.frame_edit,'string',num2str(D3_GLOBAL.current_frame));
 set(handles.frame_slider,'value',D3_GLOBAL.current_frame);
-load_video_frame ;
+load_video_frame(false) ;
 update(handles);
 
 % --------------------------------------------------------------------
@@ -258,7 +217,7 @@ global D3_GLOBAL
 D3_GLOBAL.current_frame = fix(min(max(1,str2double(get(handles.frame_edit,'string'))), D3_GLOBAL.max_frames))  ;
 set(handles.frame_slider,'value',D3_GLOBAL.current_frame);
 set(handles.frame_edit,'string',num2str(D3_GLOBAL.current_frame));
-load_video_frame ;
+load_video_frame(false) ;
 update(handles);
 
 
@@ -339,7 +298,6 @@ D3_GLOBAL.remember_zoom = 0;
 
 waitfor(select_calib) ;
 
-
 %now put program in calibration mode
 set(handles.mode_popup,'value',1);
 mode_changed(handles);
@@ -364,11 +322,6 @@ D3_GLOBAL.calibration = variable ;
 mode_changed(handles);
 update(handles);
 
-
-%now put program in calibration mode
-% set(handles.mode_popup,'value',1);
-% mode_changed;
-% update
 
 % save calibration data under some name
 % --------------------------------------------------------------------
@@ -557,8 +510,6 @@ startframe =  round(D3_GLOBAL.trial_params.trial_start * D3_GLOBAL.trial_params.
 endframe =  round(D3_GLOBAL.trial_params.trial_end * D3_GLOBAL.trial_params.fvideo) ;
 set(handles.db_frame_text,'string',[ num2str(startframe) ' , ' num2str(endframe)]);
 
-
-
 load_trial_video(handles,1);
 load_trial_video(handles,2);
 mode_changed(handles) ; %to get the points to show...
@@ -585,31 +536,6 @@ end % switch
 
 %wipe data for old trial and start afresh
 initialise_all(handles);
-
-%forces people to enter trial code in my format
-% removed BF (2009.10.16) - trial code is already set when you load the
-% camera files
-% prompt={'Year','Month','Day','Session','Trial#'};
-% def={'2004','01','01','1','01'};
-% dlgTitle='New trial';
-% lineNo=1;
-% answer=inputdlg(prompt,dlgTitle,lineNo,def);
-% if ~isempty(answer)
-%     yr = answer{1};
-%     mo = answer{2};
-%     dy = answer{3};
-%     se = answer{4};
-%     tr = answer{5};
-%     tc = [yr(1:4) '.' mo(1:2) '.' dy(1:2) '.' se(1) '.' tr(1:2)];
-%     set(handles.trialcode_edit,'string',tc);
-%     D3_GLOBAL.tcode = tc;
-%     set(gcf,'Name',['3-d: ' D3_GLOBAL.tcode],'NumberTitle','off');
-% else
-%     set(gcf,'Name','3-d','NumberTitle','off');
-%     warndlg('You have refused to enter trial date. Continue at your own risk.','No trial code');
-%     D3_GLOBAL.tcode = [];
-%     set(handles.trialcode_edit,'string','');
-% end
 
 %load calibration
 set(handles.mode_popup,'value',1);
@@ -676,7 +602,6 @@ switch(mode)
     set(handles.frame_edit,'visible','on');
     set(handles.play_button,'visible','on');
     set(handles.advance_mode_radio,'value',advance_mode,'visible','on');
-    
     
     update_cam_fname_edit(handles);
 end
@@ -752,24 +677,6 @@ switch(mode)
     end% cycle through all the points
     
     hold off;
-    
-    %   12.18.2008 - BF - the following code was giving problems and I can't see where the
-    %   variable "need_fake_mouse_click" is actually used so I've commented it out
-    
-    %this section handles the fake automatic mouseclick for stationary points
-    %     if ~isempty(D3_GLOBAL.spatial_model.point(D3_GLOBAL.current_point).stationary)
-    %         if D3_GLOBAL.spatial_model.point(D3_GLOBAL.current_point).stationary
-    %             if ~isempty(D3_GLOBAL.rawdata.point(D3_GLOBAL.current_point).cam(D3_GLOBAL.camera).coordinate)...
-    %                     && (D3_GLOBAL.current_frame > 1 )
-    %                 D3_GLOBAL.internal.x =...
-    %                     D3_GLOBAL.rawdata.point(D3_GLOBAL.current_point).cam(D3_GLOBAL.camera).coordinate(D3_GLOBAL.current_frame -1,1);
-    %                 D3_GLOBAL.internal.y =...
-    %                     D3_GLOBAL.rawdata.point(D3_GLOBAL.current_point).cam(D3_GLOBAL.camera).coordinate(D3_GLOBAL.current_frame -1,2);
-    %                 %get_next_frame;
-    %                 need_fake_mouse_click = 1 ;
-    %             end
-    %         end
-    %     end
     
 end
 
@@ -869,14 +776,15 @@ speed_factor(2) = D3_GLOBAL.internal.playback_speed / D3_GLOBAL.internal.cam_spe
 speedadj = frame_cam .* speed_factor ;
 
 
-function load_video_frame
+function load_video_frame(buffering)
 global D3_GLOBAL
 global running
 
-
-%[avi_hdl, avi_inf] = dxAviOpen(D3_GLOBAL.cam(D3_GLOBAL.camera).name);
-
-buffer_length = 30;
+if buffering
+  buffer_length = 100;
+else
+  buffer_length = 1;
+end
 
 frame_cam_speedadj_array = frame_cam_speedadj;
 
@@ -892,13 +800,6 @@ if isfield(D3_GLOBAL, 'buffer') && (D3_GLOBAL.buffer.cam == D3_GLOBAL.camera) &&
   D3_GLOBAL.image(D3_GLOBAL.camera).c.cdata = D3_GLOBAL.buffer.video(:,:,:,buffer_indx);
 else
   try
-    %D3_GLOBAL.image(1).c = aviread(D3_GLOBAL.cam(1).name,frame_cam_speedadj(1));
-    %D3_GLOBAL.image(2).c = aviread(D3_GLOBAL.cam(2).name,frame_cam_speedadj(2));
-    
-    %     pixmap = dxAviReadMex(avi_hdl,  frame_cam_speedadj_array(D3_GLOBAL.camera));
-    %     pixmap = reshape(pixmap/255,[avi_inf.Height,avi_inf.Width,3]);
-    %     D3_GLOBAL.image(D3_GLOBAL.camera).c.cdata = pixmap;
-    
     if (datenum(version('-date')) >= datenum('3-September-2010'))
       obj = VideoReader(D3_GLOBAL.cam(D3_GLOBAL.camera).name);
     else
@@ -906,7 +807,6 @@ else
     end
     
     if obj.NumberOfFrames ~= 1 %a calibration with only one frame breaks the reading of the mmreader object
-      
       if (D3_GLOBAL.current_frame + buffer_length) >= D3_GLOBAL.max_frames
         buffer_length = D3_GLOBAL.max_frames-D3_GLOBAL.current_frame+1;
       end
@@ -927,7 +827,6 @@ else
     disp('No video file');
   end
 end
-% dxAviCloseMex(avi_hdl);
 
 %end_frames =1 if we are out of frames
 function [end_frames] = advance_frame
@@ -939,18 +838,15 @@ if get(D3_GLOBAL.handles.mode_popup,'value') == 1
   return
 end
 
-
 D3_GLOBAL.current_frame = D3_GLOBAL.current_frame + 1 ;
 if D3_GLOBAL.current_frame <= D3_GLOBAL.max_frames
   end_frames = 0;
-  %     D3_GLOBAL.image(1).c = aviread(D3_GLOBAL.cam(1).name,D3_GLOBAL.current_frame);
-  %     D3_GLOBAL.image(2).c = aviread(D3_GLOBAL.cam(2).name,D3_GLOBAL.current_frame);
 else
   D3_GLOBAL.current_frame = 1 ;
   end_frames = 1 ;
 end
 
-load_video_frame ;
+load_video_frame(true);
 
 
 % --------------------------------------------------------------------
@@ -1083,26 +979,13 @@ load_trial_video(handles,cam);
 function load_trial_video(handles,n)
 global D3_GLOBAL
 
-
-%ainfo = aviinfo(D3_GLOBAL.cam(n).name);
-
 D3_GLOBAL.max_frames = round((D3_GLOBAL.trial_params.trial_end - D3_GLOBAL.trial_params.trial_start) *...
   D3_GLOBAL.trial_params.fvideo) + 1;%+1 because if we only had one frame...
-
-% if ~isempty(D3_GLOBAL.max_frames)
-%     if D3_GLOBAL.max_frames ~= ainfo.NumFrames
-%         warndlg('AVI frame counts don''t match!','Video mismatch');
-%     end
-% else
-%     D3_GLOBAL.max_frames = ainfo.NumFrames ;
-% end
 
 set(handles.frame_slider,'min',1,'max',D3_GLOBAL.max_frames,'sliderstep',[2/D3_GLOBAL.max_frames 10/D3_GLOBAL.max_frames],...
   'value',1);
 D3_GLOBAL.current_frame = 1 ;
 frame_cam_speedadj_array = frame_cam_speedadj;
-
-%[avi_hdl, avi_inf] = dxAviOpen(D3_GLOBAL.cam(n).name);
 
 if exist(D3_GLOBAL.cam(n).name,'file')
   if (datenum(version('-date')) >= datenum('3-September-2010'))
@@ -1114,15 +997,10 @@ else
   disp('cant find video file');
 end
 try
-  %D3_GLOBAL.image(n).c = aviread(D3_GLOBAL.cam(n).name,D3_GLOBAL.current_frame);
-  %pixmap = dxAviReadMex(avi_hdl, frame_cam_speedadj_array(n));
-  %pixmap = reshape(pixmap/255,[avi_inf.Height,avi_inf.Width,3]);
-  
   D3_GLOBAL.image(n).c.cdata = read(obj, frame_cam_speedadj_array(n));
 catch
   disp('load_trial_video :No video');
 end
-%dxAviCloseMex(avi_hdl);
 set(handles.frame_edit,'string',num2str(D3_GLOBAL.current_frame));
 update(handles);
 
@@ -1166,7 +1044,6 @@ A = D3_GLOBAL.calibration.A;
 %%just for point one...
 disp('Computing 3d for smoothened data');
 
-%L = [D3_GLOBAL.rawdata.point(1).cam(1).coordinate D3_GLOBAL.rawdata.point(1).cam(2).coordinate];
 for n = 1:length(D3_GLOBAL.rawdata.point)
   L = [D3_GLOBAL.rawdata.smoothened_point(n).cam(1).coordinate...
     D3_GLOBAL.rawdata.smoothened_point(n).cam(2).coordinate];
@@ -1212,7 +1089,7 @@ while get(D3_GLOBAL.handles.play_button,'value') == 1
   end
   
   D3_GLOBAL.current_frame = D3_GLOBAL.current_frame + 1 ;
-  load_video_frame;
+  load_video_frame(true);
   update(D3_GLOBAL.handles);
   drawnow
 end
@@ -1334,10 +1211,6 @@ function smooth_camera_coords(filt_len)
 global D3_GLOBAL
 
 for n=1:length(D3_GLOBAL.rawdata.point)%cycle thru points
-  %     D3_GLOBAL.rawdata.smoothened_point(n).cam(1).coordinate =...
-  %         cam_coord_smooth(D3_GLOBAL.rawdata.point(n).cam(1).coordinate,filt_len);
-  %     D3_GLOBAL.rawdata.smoothened_point(n).cam(2).coordinate =...
-  %         cam_coord_smooth(D3_GLOBAL.rawdata.point(n).cam(2).coordinate,filt_len);
   
   len = size(D3_GLOBAL.rawdata.point(n).cam(1).coordinate,1);
   if filt_len == 0
@@ -1402,17 +1275,9 @@ len = D3_GLOBAL.max_frames - D3_GLOBAL.current_frame + 1 ;
 D3_GLOBAL.rawdata.point(D3_GLOBAL.current_point).cam(D3_GLOBAL.camera).coordinate(D3_GLOBAL.current_frame:D3_GLOBAL.current_frame + len-1,:) =...
   repmat([D3_GLOBAL.internal.x D3_GLOBAL.internal.y],len,1);
 
-% advances the point - if you select a previous point after filling, it
-% screws up
-% if D3_GLOBAL.current_point < length(D3_GLOBAL.spatial_model.point)
-%     D3_GLOBAL.current_point = D3_GLOBAL.current_point + 1;
-%     set(handles.point_select_popup,'value',D3_GLOBAL.current_point);
-% end
-
 D3_GLOBAL.current_frame = 1;
 
-
-load_video_frame;
+load_video_frame(false);
 update(handles);
 
 
@@ -1628,13 +1493,6 @@ update(handles);
 % --------------------------------------------------------------------
 function frame_rate_Callback(hObject, eventdata, handles)
 global D3_GLOBAL
-% hObject    handle to frame_rate (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of frame_rate as text
-%        str2double(get(hObject,'String')) returns contents of frame_rate as a double
-
 D3_GLOBAL.trial_params.fvideo = str2double(get(hObject,'String'));
 set_time_frame_parameters(handles);
 set(handles.frame_rate,'BackgroundColor',[1 1 1]);
@@ -1657,24 +1515,9 @@ set(handles.clip_start_c2_edit,'string',num2str(D3_GLOBAL.trial_params.clip(2).s
 % --------------------------------------------------------------------
 % --- Executes during object creation, after setting all properties.
 function frame_rate_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to frame_rate (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
   set(hObject,'BackgroundColor','white');
 end
-
-
-%
-% % --------------------------------------------------------------------
-% function varargout = interaction_time_edit_Callback(h, eventdata, handles, varargin)
-% global D3_GLOBAL
-%
-% D3_GLOBAL.trial_params.interaction_time = str2double(get(gcbo,'string'));
-
 
 % --------------------------------------------------------------------
 function varargout = export_db_Callback(h, eventdata, handles, varargin)
@@ -1791,42 +1634,28 @@ fclose(f);
 
 % --------------------------------------------------------------------
 function varargout = export_motus_Callback(h, eventdata, handles, varargin)
-
 export_as_motus ;
 
 
 % --- Executes on button press in Auto_Track_pushbutton.
 function Auto_Track_pushbutton_Callback(hObject, eventdata, handles)
-% hObject    handle to Auto_Track_pushbutton (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
 % read there a start frame
 Ref_Frame = str2double(get(handles.Auto_Track_Reference_Frame_edit,'string'));
 End_Frame = str2double(get(handles.Auto_Tracking_End_Frame_edit,'string'));
 set(handles.Auto_Track_Stop_pushbutton,'Enable','on');
 set(handles.Auto_Track_Stop_pushbutton,'UserData',0);
-handles = Auto_Track (handles, Ref_Frame, End_Frame);
+Auto_Track (handles, Ref_Frame, End_Frame);
 
 
 
 % --- Executes on button press in Auto_Track_Stop_pushbutton.
 function Auto_Track_Stop_pushbutton_Callback(hObject, eventdata, handles)
-% hObject    handle to Auto_Track_Stop_pushbutton (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 set(hObject,'UserData',1);
 
 
 
 % --- Executes during object creation, after setting all properties.
 function Auto_Track_Reference_Frame_edit_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to Auto_Track_Reference_Frame_edit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
 if ispc
   set(hObject,'BackgroundColor','white');
 else
@@ -1836,23 +1665,10 @@ end
 
 
 function Auto_Track_Reference_Frame_edit_Callback(hObject, eventdata, handles)
-% hObject    handle to Auto_Track_Reference_Frame_edit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of Auto_Track_Reference_Frame_edit as text
-%        str2double(get(hObject,'String')) returns contents of Auto_Track_Reference_Frame_edit as a double
-
 
 
 % --- Executes during object creation, after setting all properties.
 function Auto_Tracking_End_Frame_edit_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to Auto_Tracking_End_Frame_edit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
 if ispc
   set(hObject,'BackgroundColor','white');
 else
@@ -1862,9 +1678,6 @@ end
 
 
 function Auto_Tracking_End_Frame_edit_Callback(hObject, eventdata, handles)
-% hObject    handle to Auto_Tracking_End_Frame_edit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 % Hints: get(hObject,'String') returns contents of Auto_Tracking_End_Frame_edit as text
 %        str2double(get(hObject,'String')) returns contents of Auto_Tracking_End_Frame_edit as a double
@@ -1950,8 +1763,8 @@ qwe = qwe > thr;
 imagesc(curr_frame);
 
 hold on
-[Y X] = find(qwe==1); plot(X,Y,'.r')
-[x y] = ginput(1);
+[Y, X] = find(qwe==1); plot(X,Y,'.r')
+[x, y] = ginput(1);
 hold off
 %D3_GLOBAL.internal.x = x;%we need this since this fun returns corners of a voxel that we clicked (we think)
 %D3_GLOBAL.internal.y = y;
@@ -2004,9 +1817,6 @@ disp(['Ellapsed time is: ' num2str(t) ' seconds. Frames/Second: ' num2str((N-beg
 
 % --- Executes on button press in load_stationary_points_button.
 function load_stationary_points_button_Callback(hObject, eventdata, handles)
-% hObject    handle to load_stationary_points_button (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 global D3_GLOBAL;
 
 return_code = load_stationary_points;
@@ -2017,26 +1827,13 @@ end
 
 % --- Executes during object creation, after setting all properties.
 function cam_fname_edit_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to cam_fname_edit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
 
 
 
 function cam_fname_edit_Callback(hObject, eventdata, handles)
-% hObject    handle to cam_fname_edit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of cam_fname_edit as text
-%        str2double(get(hObject,'String')) returns contents of cam_fname_edit as a double
-
 
 % --------------------------------------------------------------------
 function menu_file_Callback(hObject, eventdata, handles)
-% hObject    handle to menu_file (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 
 function key_press_handler(hObject)
@@ -2059,23 +1856,14 @@ D3_GLOBAL.last_key_press = key;
 
 % --------------------------------------------------------------------
 function menu_tools_Callback(hObject, eventdata, handles)
-% hObject    handle to menu_tools (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 
 % --------------------------------------------------------------------
 function menu_ignore_segs_Callback(hObject, eventdata, handles)
-% hObject    handle to menu_ignore_segs (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 
 % --------------------------------------------------------------------
 function menu_ignore_segs_cam1_Callback(hObject, eventdata, handles)
-% hObject    handle to menu_ignore_segs_cam1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 global D3_GLOBAL
 if isempty(D3_GLOBAL.ignore_segs_cam1)
@@ -2105,9 +1893,6 @@ D3_GLOBAL.ignore_segs_cam1 = ignore_segs_cam;
 
 % --------------------------------------------------------------------
 function menu_ignore_segs_cam2_Callback(hObject, eventdata, handles)
-% hObject    handle to menu_ignore_segs_cam2 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 global D3_GLOBAL
 if isempty(D3_GLOBAL.ignore_segs_cam2)
@@ -2126,7 +1911,7 @@ end
 % given relative frame numbers lie within the
 ignore_segs_cam = str2num(answer{1});
 if (isempty(ignore_segs_cam) && ~isempty(answer{1}))... %if there is a value entered that wasn't converted to a num
-    || (~isempty(ignore_segs_cam) ... %got something 
+    || (~isempty(ignore_segs_cam) ... %got something
     && (size(ignore_segs_cam,2) ~= 2 || ... %it's a column vector?
     any(ignore_segs_cam(:) ~= fix(ignore_segs_cam(:)))))
   warndlg('Given ignore segments string is invalid; it will be ignored.', 'Invalid input');
@@ -2138,31 +1923,16 @@ D3_GLOBAL.ignore_segs_cam2 = ignore_segs_cam;
 
 % --------------------------------------------------------------------
 function manage_spatial_models_Callback(hObject, eventdata, handles)
-% hObject    handle to manage_spatial_models (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 waitfor(manage_spatial_models);
 
 
 
 function auto_track_thresh_Callback(hObject, eventdata, handles)
-% hObject    handle to auto_track_thresh (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of auto_track_thresh as text
-%        str2double(get(hObject,'String')) returns contents of auto_track_thresh as a double
 set(hObject,'String',num2str(str2double(get(hObject,'String'))));
 
 
 % --- Executes during object creation, after setting all properties.
 function auto_track_thresh_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to auto_track_thresh (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+  set(hObject,'BackgroundColor','white');
 end
