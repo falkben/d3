@@ -265,7 +265,7 @@ function varargout = trial_spatial_model_Callback(h, eventdata, handles, varargi
 % --------------------------------------------------------------------
 function varargout = load_spatial_model_Callback(h, eventdata, handles, varargin)
 load_spatial_model(handles);
-
+update(handles);
 
 function load_spatial_model(handles)
 global D3_GLOBAL
@@ -278,7 +278,6 @@ end
 if (get(handles.mode_popup,'value') == 2) %digitizing, need to update the spatial model points
   mode_changed(handles);
 end
-update(handles);
 
 
 % --------------------------------------------------------------------
@@ -372,29 +371,25 @@ if ~isfield(D3_GLOBAL.internal,'file_name')
 end
 
 if ispref('d3_path','analyzed_path')
-  [pn] = getpref('d3_path','analyzed_path');
+  pn = [getpref('d3_path','analyzed_path') '\'];
 else
   pn = './';
 end
 
-cdir = pwd;
-try
-  cd(pn);
-catch
+if ~exist(pn,'dir')
+  pn = './';
   disp('Your analyzed video path variable points to a non existant directory.');
 end
 
 %save trial as simply erases this internal filename and calls this function
 if isempty(D3_GLOBAL.internal.file_name)
-  [filename, pathname] = uiputfile( [ tcode '_' num2str(startframe) '.d3'],'Save trial as');
-  cd(cdir);
+  [filename, pathname] = uiputfile( [pn tcode '_' num2str(startframe) '.d3'],'Save trial as');
   if filename == 0
     return
   end
   D3_GLOBAL.internal.file_name = [pathname filename];
 end
 
-cd(cdir);
 fn = D3_GLOBAL.internal.file_name;
 
 if length(fn) > 3
@@ -447,20 +442,16 @@ switch ButtonName,
 end % switch
 
 if ispref('d3_path','analyzed_path')
-  [pn] = getpref('d3_path','analyzed_path');
+  pn = [getpref('d3_path','analyzed_path') '\'];
 else
   pn = './';
 end
 
-cdir = pwd;
-try
-  cd(pn);
-catch
+if ~exist(pn,'dir')
   disp('Cannot find your analyzed files directory.  Please check your paths.');
-end;
-[filename, pathname] = uigetfile( '*.d3','Load trial');
-cd(cdir);
-if ~ischar(filename)
+end
+[filename, pathname] = uigetfile([pn '*.d3'],'Load trial');
+if isequal(pathname,0)
   return
 end
 
@@ -547,6 +538,8 @@ load_spatial_model(handles);
 %load camera videos
 load_video_file(handles,1);
 load_video_file(handles,2);
+
+update(handles);
 
 
 % --------------------------------------------------------------------
@@ -919,42 +912,33 @@ load_video_file(handles,2);
 function load_video_file(handles,cam)
 global D3_GLOBAL
 
-if ispref('d3_path','video')
-  [pn] = getpref('d3_path','video');
-else
-  pn = './';
-end
+pn = './';
 
-old_dir = pwd;
-try
-  cd(pn);
-catch
+if ispref('d3_path','video') && exist(getpref('d3_path','video'),'dir')
+  pn = [getpref('d3_path','video') '\'];
+else
   disp('Your paths variable points to a directory that no longer exists. Please update the paths.');
 end
 
-if isfield(D3_GLOBAL,'vid_dir')
-  if ~ischar(D3_GLOBAL.vid_dir)
-    D3_GLOBAL.vid_dir = './';
-  end
-  try
-    cd(D3_GLOBAL.vid_dir);
-  catch
+if isfield(D3_GLOBAL,'vid_dir') 
+  if exist(D3_GLOBAL.vid_dir,'dir')
+    pn = D3_GLOBAL.vid_dir;
+  else
     disp('Could not find your video file.');
+    D3_GLOBAL.vid_dir = '.\';
   end
 else
-  D3_GLOBAL.vid_dir = './';
+  D3_GLOBAL.vid_dir = '.\';
 end
 
-[filename, pathname] = uigetfile( {'*.avi';'*.*'},['Load Camera #' num2str(cam) ' video']);
-if (filename)==0
-  %cancelled
-  cd(old_dir) ;
+pause(.1) %added because on external hard drive, it was prematurely exiting uigetfile without being called
+[filename, pathname] = uigetfile( {'*.avi';'*.*'},...
+  ['Load Camera #' num2str(cam) ' video'],pn);
+if isequal(filename,0) %cancelled
   return;
 end
 
-D3_GLOBAL.vid_dir = pathname ;
-cd(old_dir) ;
-
+D3_GLOBAL.vid_dir = pathname;
 D3_GLOBAL.cam(cam).name = [pathname filename];
 
 if ~isempty(D3_GLOBAL.cam(1).name) && ~isempty(D3_GLOBAL.cam(2).name)
@@ -1002,7 +986,6 @@ catch
   disp('load_trial_video :No video');
 end
 set(handles.frame_edit,'string',num2str(D3_GLOBAL.current_frame));
-update(handles);
 
 
 function get_dlt
@@ -1541,28 +1524,22 @@ if ~ispref('d3_path','analyzed_path')
 end
 mat_file_path = getpref('d3_path','analyzed_path');
 
-cdir = pwd;
-
-try
-  cd(mat_file_path);
-catch
+if exist(mat_file_path,'dir')
+  pn = [mat_file_path '\'];
+else
   disp('Path does not exist.  Update your analyzed video file dirctory.');
+  pn = '.\';
 end
 
-try
-  [filename, pathname] = uiputfile( [ D3_GLOBAL.tcode '_' num2str(D3_GLOBAL.d3_analysed.startframe) '_d3.mat'],'Save trial as');
-  cd(cdir);
-  if filename == 0
-    disp('Save cancelled.')
-    return
-  end
-  
-  fn = [pathname filename];
-  
-  save_d3_mat_file(fn, D3_GLOBAL);
-  
-catch
-  cd(cdir);
+[filename, pathname] = uiputfile( [pn D3_GLOBAL.tcode '_' num2str(D3_GLOBAL.d3_analysed.startframe) '_d3.mat'],'Save trial as');
+if filename == 0
+  disp('Save cancelled.')
+  return
+end
+
+fn = [pathname filename];
+saved = save_d3_mat_file(fn, D3_GLOBAL);
+if ~saved
   errordlg('mat file not saved','Error');
 end
 
