@@ -914,7 +914,7 @@ global D3_GLOBAL
 
 pn = './';
 
-if ispref('d3_path','video') && exist(getpref('d3_path','video'),'dir')
+if ispref('d3_path','video') && ischar(getpref('d3_path','video')) && exist(getpref('d3_path','video'),'dir')
   pn = [getpref('d3_path','video') '\'];
 else
   disp('Your paths variable points to a directory that no longer exists. Please update the paths.');
