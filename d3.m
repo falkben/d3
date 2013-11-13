@@ -1191,6 +1191,7 @@ update(handles);
 
 
 function smooth_camera_coords(filt_len)
+%note that this does not take into consideration the ignored frames (and it ought to...)
 global D3_GLOBAL
 
 for n=1:length(D3_GLOBAL.rawdata.point)%cycle thru points
@@ -1843,12 +1844,16 @@ function menu_ignore_segs_Callback(hObject, eventdata, handles)
 function menu_ignore_segs_cam1_Callback(hObject, eventdata, handles)
 
 global D3_GLOBAL
+if ~isfield(D3_GLOBAL,'ignore_segs_cam1')
+  D3_GLOBAL.ignore_segs_cam1=[];
+  D3_GLOBAL.ignore_segs_cam2=[];
+end
 if isempty(D3_GLOBAL.ignore_segs_cam1)
   igseg_str = '';
 else
   igseg_str = mat2str( D3_GLOBAL.ignore_segs_cam1 );
 end
-answer = inputdlg( {'Enter Camera 1 ignore segments matrix:'}, ...
+answer = inputdlg( {'Enter Camera 1 ignore segments matrix: (format: clip1start clip1end; clip2start clip2end):'}, ...
   'Relative frame number range to ignore...', ...
   1, {igseg_str} );
 if isempty(answer)
@@ -1872,6 +1877,10 @@ D3_GLOBAL.ignore_segs_cam1 = ignore_segs_cam;
 function menu_ignore_segs_cam2_Callback(hObject, eventdata, handles)
 
 global D3_GLOBAL
+if ~isfield(D3_GLOBAL,'ignore_segs_cam2')
+  D3_GLOBAL.ignore_segs_cam1=[];
+  D3_GLOBAL.ignore_segs_cam2=[];
+end
 if isempty(D3_GLOBAL.ignore_segs_cam2)
   igseg_str = '';
 else
