@@ -8,7 +8,7 @@ global D3_GLOBAL
 %    FIG = D3 launch d3 GUI.
 %    D3('callback_name', ...) invoke the named callback.
 
-% Last Modified by GUIDE v2.5 29-May-2013 13:30:33
+% Last Modified by GUIDE v2.5 25-Mar-2014 16:22:28
 
 if nargin == 0  % LAUNCH GUI
   
@@ -1760,6 +1760,31 @@ for k = beg_frame:N
     B = a.cdata;
   end;
   B = double(image_manipulation(B));
+  if get(handles.rel_ref_frame,'value')
+    Ref_Frame_Ind = str2double(get(handles.Auto_Track_Reference_Frame_edit,'string'));
+    
+    rrff=D3_GLOBAL.current_frame + cam_offset(n) + Ref_Frame_Ind;
+    
+    if isfield(D3_GLOBAL, 'buffer')
+      buffer_indx = find(D3_GLOBAL.buffer.frames == rrff); %our image is inside the buffer
+    else
+      buffer_indx = false;
+    end
+    
+    if buffer_indx
+      ref.cdata = D3_GLOBAL.buffer.video(:,:,:,buffer_indx);
+    else
+      ref.cdata = read(obj,rrff);
+    end
+    
+    if ndims(ref.cdata) == 3
+      Ref_Frame = rgb2gray(ref.cdata);
+    else
+      Ref_Frame = ref.cdata;
+    end;
+    Ref_Frame = double(image_manipulation(Ref_Frame));
+    
+  end
   qwe = (B-Ref_Frame)>thr;
   
   [Y X] = find(qwe==1); S = [X Y];
@@ -1922,3 +1947,7 @@ function auto_track_thresh_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
   set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in rel_ref_frame.
+function rel_ref_frame_Callback(hObject, eventdata, handles)
