@@ -8,7 +8,7 @@ global D3_GLOBAL
 %    FIG = D3 launch d3 GUI.
 %    D3('callback_name', ...) invoke the named callback.
 
-% Last Modified by GUIDE v2.5 25-Mar-2014 16:22:28
+% Last Modified by GUIDE v2.5 25-Apr-2014 14:23:47
 
 if nargin == 0  % LAUNCH GUI
   
@@ -413,13 +413,14 @@ try
   save(D3_GLOBAL.internal.file_name,'whole_trial');
 catch
   %something didn't work out :(
-  [filename, pathname] = uiputfile( [ tcode '_' num2str(startframe) '.d3'],'Save trial as');
+  [filename, pathname] = uiputfile( [pn  tcode '_' num2str(startframe) '.d3'],'Save trial as');
   if filename == 0
     return
   end
   D3_GLOBAL.internal.file_name = [pathname filename];
   save(D3_GLOBAL.internal.file_name,'whole_trial');
 end
+disp(['saved: ' D3_GLOBAL.internal.file_name]);
 
 
 
@@ -639,31 +640,33 @@ switch(mode)
     
     for n=1:length(D3_GLOBAL.rawdata.point)
       
-      try
-        if size(D3_GLOBAL.rawdata.point(n).cam(D3_GLOBAL.camera).coordinate,1) >= D3_GLOBAL.current_frame
-          point_x = D3_GLOBAL.rawdata.point(n).cam(D3_GLOBAL.camera).coordinate(D3_GLOBAL.current_frame  ,1);
-          point_y = D3_GLOBAL.rawdata.point(n).cam(D3_GLOBAL.camera).coordinate(D3_GLOBAL.current_frame  ,2);
-          plot(point_x, point_y,['*' ...
-            D3_GLOBAL.spatial_model.point(n).color ]);
+      if size(D3_GLOBAL.rawdata.point(n).cam(D3_GLOBAL.camera).coordinate,1) >= D3_GLOBAL.current_frame
+        point_x = D3_GLOBAL.rawdata.point(n).cam(D3_GLOBAL.camera).coordinate(D3_GLOBAL.current_frame  ,1);
+        point_y = D3_GLOBAL.rawdata.point(n).cam(D3_GLOBAL.camera).coordinate(D3_GLOBAL.current_frame  ,2);
+        plot(point_x, point_y,['*' ...
+          D3_GLOBAL.spatial_model.point(n).color ]);
+        if get(handles.show_point_names,'value')
+          text(point_x, point_y,D3_GLOBAL.spatial_model.point(n).name,...
+            'color','w')
         end
-        
-        %plot the trace
-        
-        if get(D3_GLOBAL.handles.plot_trajectory_check,'value')
-          point_x = D3_GLOBAL.rawdata.point(n).cam(D3_GLOBAL.camera).coordinate...
-            (1:min(size(D3_GLOBAL.rawdata.point(n).cam(D3_GLOBAL.camera).coordinate,1),D3_GLOBAL.current_frame),1);
-          point_y = D3_GLOBAL.rawdata.point(n).cam(D3_GLOBAL.camera).coordinate...
-            (1:min(size(D3_GLOBAL.rawdata.point(n).cam(D3_GLOBAL.camera).coordinate,1),D3_GLOBAL.current_frame),2);
-          h=plot(point_x, point_y, D3_GLOBAL.spatial_model.point(n).color);
-          set(h,'linewidth',2);
-          
-          try
-            point_x = D3_GLOBAL.rawdata.smoothened_point(n).cam(D3_GLOBAL.camera).coordinate...
-              (1:min(size(D3_GLOBAL.rawdata.smoothened_point(n).cam(D3_GLOBAL.camera).coordinate,1),D3_GLOBAL.current_frame),1);
-            point_y = D3_GLOBAL.rawdata.smoothened_point(n).cam(D3_GLOBAL.camera).coordinate...
-              (1:min(size(D3_GLOBAL.rawdata.smoothened_point(n).cam(D3_GLOBAL.camera).coordinate,1),D3_GLOBAL.current_frame),2);
-            plot(point_x, point_y, 'w:');
-          end
+      end
+
+      %plot the trace
+
+      if get(D3_GLOBAL.handles.plot_trajectory_check,'value')
+        point_x = D3_GLOBAL.rawdata.point(n).cam(D3_GLOBAL.camera).coordinate...
+          (1:min(size(D3_GLOBAL.rawdata.point(n).cam(D3_GLOBAL.camera).coordinate,1),D3_GLOBAL.current_frame),1);
+        point_y = D3_GLOBAL.rawdata.point(n).cam(D3_GLOBAL.camera).coordinate...
+          (1:min(size(D3_GLOBAL.rawdata.point(n).cam(D3_GLOBAL.camera).coordinate,1),D3_GLOBAL.current_frame),2);
+        h=plot(point_x, point_y, D3_GLOBAL.spatial_model.point(n).color);
+        set(h,'linewidth',2);
+
+        try
+          point_x = D3_GLOBAL.rawdata.smoothened_point(n).cam(D3_GLOBAL.camera).coordinate...
+            (1:min(size(D3_GLOBAL.rawdata.smoothened_point(n).cam(D3_GLOBAL.camera).coordinate,1),D3_GLOBAL.current_frame),1);
+          point_y = D3_GLOBAL.rawdata.smoothened_point(n).cam(D3_GLOBAL.camera).coordinate...
+            (1:min(size(D3_GLOBAL.rawdata.smoothened_point(n).cam(D3_GLOBAL.camera).coordinate,1),D3_GLOBAL.current_frame),2);
+          plot(point_x, point_y, 'w:');
         end
       end
       
@@ -956,7 +959,10 @@ if ~isempty(D3_GLOBAL.cam(1).name) && ~isempty(D3_GLOBAL.cam(2).name)
 end
 
 load_trial_video(handles,cam);
-
+if cam == D3_GLOBAL.camera
+  load_video_frame(0);
+  update(handles);
+end
 
 % --------------------------------------------------------------------
 % This is called when we first load a trial. If we don't have a video file we set stuff from the analysed data
@@ -1520,12 +1526,15 @@ function varargout = mat_export_Callback(h, eventdata, handles, varargin)
 global D3_GLOBAL
 
 if ~ispref('d3_path','analyzed_path')
-  [pathname] = uigetdir(pwd, 'Locate mat file export folder');
+  pathname = uigetdir(pwd, 'Locate mat file export folder');
   setpref('d3_path','analyzed_path',[pathname]);
 end
 mat_file_path = getpref('d3_path','analyzed_path');
 
-if exist(mat_file_path,'dir')
+if isfield(D3_GLOBAL.internal,'file_name') && ...
+    exist(fileparts(D3_GLOBAL.internal.file_name),'dir')
+  pn=[fileparts(D3_GLOBAL.internal.file_name) '\'];
+elseif exist(mat_file_path,'dir')
   pn = [mat_file_path '\'];
 else
   disp('Path does not exist.  Update your analyzed video file dirctory.');
@@ -1951,3 +1960,13 @@ end
 
 % --- Executes on button press in rel_ref_frame.
 function rel_ref_frame_Callback(hObject, eventdata, handles)
+
+
+% --- Executes on button press in show_point_names.
+function show_point_names_Callback(hObject, eventdata, handles)
+% hObject    handle to show_point_names (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of show_point_names
+update(handles);
