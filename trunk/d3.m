@@ -410,17 +410,18 @@ whole_trial.calibration.image = [];
 whole_trial.image = [];
 
 try
-  save(D3_GLOBAL.internal.file_name,'whole_trial');
+  save(whole_trial.internal.file_name,'whole_trial');
 catch
   %something didn't work out :(
   [filename, pathname] = uiputfile( [pn  tcode '_' num2str(startframe) '.d3'],'Save trial as');
   if filename == 0
     return
   end
+  whole_trial.internal.file_name = [pathname filename];
   D3_GLOBAL.internal.file_name = [pathname filename];
-  save(D3_GLOBAL.internal.file_name,'whole_trial');
+  save(whole_trial.internal.file_name,'whole_trial');
 end
-disp(['saved: ' D3_GLOBAL.internal.file_name]);
+disp(['saved: ' whole_trial.internal.file_name]);
 
 
 

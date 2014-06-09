@@ -61,6 +61,10 @@ end
 
 fn=[pathname D3_GLOBAL.tcode '_' num2str(D3_GLOBAL.d3_analysed.startframe) '_d3_smooth.mat'];
 
+if filt_len==0
+  fn=regexprep(fn,'_smooth','')
+end
+
 save_d3_mat_file(fn, D3_GLOBAL);
 
 
