@@ -936,7 +936,7 @@ else
 end
 
 pause(.1) %added because on external hard drive, it was prematurely exiting uigetfile without being called
-[filename, pathname] = uigetfile( {'*.avi';'*.*'},...
+[filename, pathname] = uigetfile( {'*.avi';'*.mp4';'*.*'},...
   ['Load Camera #' num2str(cam) ' video'],pn);
 if isequal(filename,0) %cancelled
   return;

@@ -133,7 +133,8 @@ if isfield(D3_GLOBAL,'vid_dir') && ~isnumeric(D3_GLOBAL.vid_dir) && (exist(D3_GL
     cd(D3_GLOBAL.vid_dir);
 end
 
-[filename, pathname] = uigetfile( {'*.avi;*.png;*.jpg';'*.*'},['Load Camera #', num2str(cam), ' calibration']);
+[filename, pathname] = uigetfile( {'*.avi;*.mp4;*.png;*.jpg';'*.*'},...
+  ['Load Camera #', num2str(cam), ' calibration']);
 if (filename == 0)
     return;
 end
@@ -141,16 +142,15 @@ end
 D3_GLOBAL.vid_dir = pathname;
 cd(old_dir);
 
-dots = strfind(filename,'.');
-extension = filename(dots(end)+1:end);
-if strcmpi(extension,'avi')
+[~,~,extension]=fileparts(filename);
+if strcmpi(extension,'.avi') || strcmpi(extension,'.mp4')
   if (datenum(version('-date')) >= datenum('3-September-2010'))
     obj = VideoReader([pathname '/' filename]);
   else
     obj = mmreader([pathname '/' filename]);
   end
   D3_GLOBAL.calibration.image(cam).c.cdata = read(obj,1);
-elseif strcmpi(extension,'jpg') || strcmpi(extension,'png')
+elseif strcmpi(extension,'.jpg') || strcmpi(extension,'.png')
   D3_GLOBAL.calibration.image(cam).c.cdata = imread([pathname '/' filename]);
 else
   disp('could not load calibration image/video');
